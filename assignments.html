@@ -78,6 +78,186 @@
 <div>
 <h3>Assignment 0: Warmup <small>due 8:00am January 12</small></h3>
 
+<p>The purpose of this assignment is to serve as a simple warmup
+exercise and to serve as a practice "dry run" for the submission
+procedures of subsequent assignments. The general setup is as follows:
+you will complete your assignments and check everything into a private
+GitHub repo. Shortly after the assignment deadline, we'll pull your
+repo for grading. Although we will be examining your solutions to
+assignment 0, it will not be graded <i>per se</i>.</p>
+
+<p>I'm assuming you already have
+a <a href="http://github.com/">GitHub</a> account. If not, create one
+as soon as possible. Once you've signed up for an account, go and
+<a href="https://education.github.com/discount_requests/new">request
+an educational account</a>. This will allow you to create private
+repos for free. Please do this as soon as possible since there may be
+delays in the request verification process.</p>
+
+<h4 style="padding-top: 10px">Setting up Hadoop and Spark</h4>
+
+<p>Hadoop and Spark are already set up in
+the <code>linux.student.cs.uwaterloo.ca</code>
+environment. Alternatively, you may wish to install them locally on
+your own machine. Both packages work fine on Mac OS X and Linux, but
+may be difficult to get working on Windows. To run Hadoop and Spark on
+your local machine comfortably, you'll need at least 4 GB memory and
+plenty of disk space (10s of GB at least). You'll also need Java,
+Maven, and Scala.</p>
+
+<p>Bespin is a library that contains reference implementations of "big
+data" algorithms in MapReduce and Spark. We'll be using it throughout
+this course. Go and run
+the <a href="https://github.com/lintool/bespin">Word Count in
+MapReduce and Spark</a> example as shown in the Bespin README (clone
+and build the repo, download the data files, run word count in both
+MapReduce in Spark, and verify output). Assuming you are
+using <code>linux.student.cs.uwaterloo.ca</code> (or if you have
+properly set up your local environment), this task should be as simple
+as copying and pasting commands from the Bespin README.</p>
+
+<h4 style="padding-top: 10px">Time to write some code!</h4>
+
+<p>Create a <b>private</b> repo
+called <code>bigdata2016w</code>. We're assuming that you're
+already familiar with Git and GitHub, but just in case, here
+is <a href="https://help.github.com/articles/create-a-repo">how you
+create a repo on GitHub</a>. For "Who has access to this repository?",
+make sure you click "Only the people I specify". If you've
+successfully gotten an educational account (per above), you should be
+able to create private repos for free. If you're not already familiar
+with Git, there are plenty of good tutorials online: do a simple web
+search and find one you like.</p>
+
+<p>What you're going to do now is to copy the MapReduce word count
+example into you own private repo. Start with
+<a href="assignments/pom.xml">this <code>pom.xml</code></a>: copy it
+into your <code>bigdata2016w</code> repo. The replace this line in
+that file:</p>
+
+<pre>
+  &lt;groupId&gt;ca.uwaterloo.cs.bigdata2016w.lintool&lt;/groupId&gt;
+</pre>
+
+<p>Instead of <code>lintool</code>, substitute your GitHub
+username. You'll be working in your own namespace, so in everything
+that follows, substitute your own GitHub username in place
+of <code>lintool</code>.</p>
+
+<p>Next, copy:</p>
+
+<ul>
+  <li><code>bespin/src/main/java/io/bespin/java/mapreduce/wordcount/WordCount.java</code> over to
+  <li><code>bigdata2016w/src/main/java/ca/uwaterloo/cs/bigdata2016w/lintool/assignment0/WordCount.java</code>.
+</ul>
+
+<p>Open up this new version of <code>WordCount.java</code> using a
+text editor (or your IDE of choice) and change the Java package
+to <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment0</code>.</p>
+
+<p>Now, in the <code>bigdata2016w/</code> base directory, you should
+be able to run Maven to build your package:</p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>Once the build succeeds, you should be able to run the word count
+demo program in your own repository:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.WordCount \
+   -input data/Shakespeare.txt -output wc
+</pre>
+
+<p>The output should be exactly the same as the same program in
+Bespin, but the difference here is that the code is now in a
+repository under your control, in your own private namespace.<p>
+
+<p>Let's make a simple modification to word count: instead of counting
+words, I want to count the occurrences of two-character prefixes of
+words, i.e., the first two characters. That is, I want to know how
+many words begin with "aa", "ab", "ac", etc., all the way to
+"zz". Create a program called <code>PrefixCount</code> in the
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment0</code>. I
+should be able to run your program as follows:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.PrefixCount \
+   -input data/Shakespeare.txt -output cs489-2016w-lintool-a0-shakespeare
+</pre>
+
+<p>Answer the following questions:</p>
+
+<p><b>Question 1.</b> In the Shakespeare collection, what are the
+three most frequent two character prefixes and how many times does
+each occur?</p>
+
+<p><b>Question 2.</b> How frequent does the prefix "li" occur?</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>At this point, you should have a GitHub
+repo <code>bigdata2016w/</code> and inside the repo, you should have
+the word count program copied over from Bespin and the new prefix count
+implementation, along with your <code>pom.xml</code>.  Commit these
+files. Next, create a file called <code>assignment1.md</code>
+inside <code>bigdata2016w/</code>. In that file, put your answers to
+the above questions. Use the Markdown annotation format: here's
+a <a href="http://daringfireball.net/projects/markdown/basics">simple
+guide</a>.</p>
+
+<p><b>Note:</b> there is no need to commit <code>data/</code>
+or <code>target/</code> (or any results that you may have generated),
+so your repo should be very compact &mdash; it should only have four
+files: two Java source files, <code>pom.xml</code>,
+and <code>assignment1.md</code>.</p>
+
+<p>For this and all subsequent assignments, make sure everything is on
+the master branch. Push your repo to GitHub. You can verify that it's
+there by logging into your GitHub account in a web browser: your
+assignment should be viewable in the web interface.</p>
+
+<p>Almost there! Add the
+user <a href="https://github.com/teachtool">teachtool</a> a
+collaborator to your repo so that we can access it (under settings in
+the main web interface on your repo). Note: do <b>not</b> add my
+primary GitHub
+account <a href="https://github.com/lintool">lintool</a> as a
+collaborator.</p>
+
+<p>And that's it!</p>
+
+<p>Just to give you an idea of how we'll be grading future
+assignments: we will clone your repo, build your code:</p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>And then run:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.PrefixCount \
+   -input data/Shakespeare.txt -output cs489-2016w-lintool-a0-shakespeare
+</pre>
+
+<p>We'll make sure the data files are in the right place, and once the
+code completes, we will verify the output. To make sure everything is
+in the proper place, you should do a fresh clone, i.e., clone your own
+repo, but in a different location, and run through these same
+steps. If it works for you, it'll work for us.</p>
+
+<p>As mentioned above, one main purpose of this assignment is to
+provide a practice "dry run" of how assignments will be submitted in
+the future. It is your responsibility to follow these instructions and
+learn the process: we will work with you to get the process sorted out
+for this assignment, but in subsequent assignments, you may be docked
+points for failing to conform to our expectations.</p>
+
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
 </section>
