@@ -265,6 +265,170 @@ points for failing to conform to our expectations.</p>
 <div>
 <h3>Assignment 1: Counting in MapReduce <small>due 8:00am January 19</small></h3>
 
+<p>By now, you should already be familiar with the Hadoop execution
+environment (e.g., submitting jobs) and using Maven to organize your
+assignments. You will be working in the same repo as before, except
+that everything should go into the package namespace
+<code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>
+(obviously, replace <code>lintool</code> with your actual GitHub
+username.</p>
+
+<p>Before staring this assignment, it is <i>highly recommended</i>
+that you look at the implementations of bigram relative frequency and
+co-occurrence matrix computation
+in <a href="http://bespin.io">Bespin</a>.</p>
+
+<p>In this assignment you'll be
+computing <a href="http://en.wikipedia.org/wiki/Pointwise_mutual_information">pointwise
+mutual information</a>, which is a function of two events <i>x</i>
+and <i>y</i>:</p>
+
+<p><img width="200" src="assignments/PMI.png"/></p>
+
+<p>The larger the magnitude of PMI for <i>x</i> and <i>y</i> is,
+the more information you know about the probability of seeing <i>y</i>
+having just seen <i>x</i> (and vice-versa, since PMI is
+symmetrical). If seeing <i>x</i> gives you no information about seeing
+<i>y</i>, then <i>x</i> and <i>y</i> are independent and the PMI is
+zero.</p>
+
+<p>Your implementation should be in Java.</p>
+
+<p>Write a program that computes the PMI of words in the
+<code>data/Shakespeare.txt</code> collection that's used in the Bespin
+demos and the previous assignment. To be more specific, the event
+we're after is <i>x</i> occurring on a line in the file or <i>x</i>
+and <i>y</i> co-occurring on a line. That is, if a line contains A, A,
+B; then there is only one instance of A and B appearing together, not
+two. To reduce the number of spurious pairs, we are only interested in
+pairs of words that co-occur in ten or more lines. Use the same
+definition of "word" as in the word count demo.</p>
+
+<p>You will build two versions of the program (put both in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>):</p>
+
+<ol>
+
+  <li>A "pairs" implementation. The implementation must use
+  combiners. Name this implementation <code>PairsPMI</code>.</li>
+
+  <li>A "stripes" implementation.  The implementation must use
+  combiners. <code>StripesPMI</code>.</li>
+
+</ol>
+
+<p>Since PMI is symmetrical, PMI(x, y) = PMI(y, x). However, it's
+actually easier in your implementation to compute both values, so
+don't worry about duplicates. Also, use <code>TextOutputFormat</code>
+so the results of your program are human readable.</p>
+
+<p><b>Note:</b> just so everyone's answer is consistent, please use
+log base 10.</p>
+
+<p>Answer the following questions:</p>
+
+<p><b>Question 0.</b> <i>Briefly</i> describe in prose your solution,
+both the pairs and stripes implementation. For example: how many
+MapReduce jobs? What are the input records? What are the intermediate
+key-value pairs? What are the final output records? A paragraph for
+each implementation is about the expected length.</p>
+
+<p><b>Question 1.</b> What is the running time of the complete pairs
+implementation? What is the running time of the complete stripes
+implementation? (Tell me where you ran these experiments,
+e.g., <code>linux.student.cs.uwaterloo.ca</code> or your own
+laptop.)</p>
+
+<p><b>Question 2.</b> Now disable all combiners. What is the running
+time of the complete pairs implementation now? What is the running
+time of the complete stripes implementation? (Tell me where you ran
+these experiments, e.g., <code>linux.student.cs.uwaterloo.ca</code> or
+your own laptop.)</p>
+
+<p><b>Question 3.</b> How many distinct PMI pairs did you extract?</p>
+
+<p><b>Question 4.</b> What's the pair (x, y) (or pairs if there are
+ties) with the highest PMI? Write a sentence or two to explain why
+such a high PMI.</p>
+
+<p><b>Question 5.</b> What are the three words that have the highest
+PMI with "tears" and "death"? And what are the PMI values?</p>
+
+<p>Note that you can compute the answer to questions 3&mdash;5 however
+you wish: a helper Java program, a Python script, command-line
+manipulation, etc.</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>Similar to assignment 0, the answers to the questions go
+in <code>bigdata2016w/assignment1.md</code>.</li>
+
+<li>The pairs and stripes implementation should be in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>.</li>
+
+</ul>
+
+<p>When grading, we will pull your repo and build your code:<p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>Your code should build successfully. We are then going to run your
+code (for the pairs and stripes implementations, respectively):</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.PairsPMI \
+   -input data/Shakespeare.txt -output cs489-2016w-lintool-a1-shakespeare-pairs -reducers 5
+
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.StripesPMI \
+   -input data/Shakespeare.txt -output cs489-2016w-lintool-a1-shakespeare-stripes -reducers 5
+</pre>
+
+<p><b>Important:</b> Make sure that your code accepts the command-line
+parameters above!<p>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", I would
+recommend that you verify everything above works by performing a clean
+clone of your repo and going through the steps above.</p>
+
+<p>That's it! There's no need to send me anything&mdash;I already know
+your username from the first assignment. Note that everything should
+be committed and pushed to origin before the deadline. Git timestamps
+your commits and so I can tell if your assignment is late.</p>
+
+<h4 style="padding-top: 10px">Hints</h4>
+
+<ul>
+  <li>Did you take a look at the implementations of bigram relative
+  frequency and co-occurrence matrix computation
+  in <a href="http://bespin.io">Bespin</a>?</li>
+
+  <li>Your solution may require more than one MapReduce job.</li>
+
+  <li>You may have to load in "side data"?</li>
+
+  <li>My <a href="https://github.com/lintool/tools/tree/master/lintools-datatypes/">lintools-datatypes
+  package</a> has <code>Writable</code> datatypes that you might find
+  useful. (Feel free to use, but assignment can be completed
+  without.)</li>
+
+</ul>
+
+<h4 style="padding-top: 10px">Grading</h4>
+
+<p>TBA</p>
+
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
 </section>
@@ -282,6 +446,151 @@ points for failing to conform to our expectations.</p>
 <section id="assignment3" style="padding-top:35px">
 <div>
 <h3>Assignment 3: Inverted Indexing <small>due 8:00am February 2</small></h3>
+
+<p>For this assignment, you will be working in the same repo as
+before, except that everything should go into the package namespace
+<code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment3</code>
+(obviously, replace <code>lintool</code> with your actual GitHub
+username.</p>
+
+<p>Look at the inverted indexing and boolean retrieval implementation
+in <a href="http://bespin.io">Bespin</a>. Make sure you understand the
+code. Starting from the inverted indexing
+baseline <code>BuildInvertedIndex</code>, modify the indexer code in
+the two following ways:</p>
+
+<p><b>1. Index Compression.</b> The index should be compressed using
+<code>VInts</code>:
+see <code>org.apache.hadoop.io.WritableUtils</code>. You should also
+use gap-compression techniques as appropriate.</p>
+
+<p><b>2. Buffering postings.</b> The baseline indexer implementation
+currently buffers and sorts postings in the reducer, which as we
+discussed in class is not a scalable solution. Address this
+scalability bottleneck using techniques we discussed in class and in
+the textbook.</p>
+
+<p><b>3. Term partitioning.</b> The baseline indexer implementation
+currently uses only one reducer and therefore all postings lists are
+shuffled to the same node and written to HDFS in a single
+partition. Change this so we can specify the number of reducers
+(hence, partitions) as a command-line argument. This is, of course,
+easy to do, but we need to make sure that the searcher understands
+this partitioning also.</p>
+
+<p><b>Note:</b> The major scalability issue is
+buffering <i>uncompressed</i> postings in memory. In your solution,
+you'll still end up buffering each postings list, but
+in <i>compressed</i> form (raw bytes, no additional object
+overhead). This is fine because if you use the right compression
+technique, the postings lists are quite small. As a data point, on a
+collection of 50 million web pages, 2GB heap is more than enough for a
+full <i>positional</i> index (and in this assignment you're not asked
+to store positional information in your postings).</p>
+
+<p>To go into a bit more detail: in the reference implementation, the
+final key type is <code>PairOfWritables&lt;IntWritable,
+ArrayListWritable&lt;PairOfInts&gt;&gt;</code>. The most obvious idea
+is to change that into something
+like <code>PairOfWritables&lt;VIntWritable,
+ArrayListWritable&lt;PairOfVInts&gt;&gt;</code>. This does not work!
+The reason is that you will still be materializing each posting, i.e.,
+all <code>PairOfVInts</code> objects in memory. This translates into a
+Java object for every posting, which is wasteful in terms of memory
+usage and will exhaust memory pretty quickly as you scale. In other
+words, you're <i>still</i> buffering objects&mdash;just inside
+the <code>ArrayListWritable</code>.
+
+<p>This new indexer should be
+named <code>BuildInvertedIndexCompressed</code>. This new class should
+be in the
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment3</code>. Make
+sure it works on the Shakespeare.txt collection.</p>
+
+<p>Modify <code>BooleanRetrieval</code> so that it works with the new
+compressed indexes. Name this new
+class <code>BooleanRetrievalCompressed</code>. This new class should
+be in the same package as above and give <i>exactly</i> the same
+output as the old version. That is, when grading, we
+will <code>diff</code> the output of your implementation with the one
+in Bespin.</p>
+
+<!--
+<p><b>Another note:</b> the <code>BooleanRetrieval</code> reference
+implementation prints out the entire line (i.e., "document") that
+satisfies the query. For the Shakespeare collection, this is fine
+since the lines are short. However, in the simplewiki collection, the
+lines (i.e., documents) are much longer, so you should somehow
+truncate: either print out only the article title or the first 80
+characters, or something along those lines.</p>
+-->
+
+<p>Answer the following questions:</p>
+
+<p><b>Question 1.</b> What is the size of your compressed index for Shakespeare collection?</p>
+
+<!--
+<p><b>Question 2.</b> What is the size of your compressed index for <code>simplewiki-20141222-pages-articles.txt</code>?</p>
+
+<p><b>Question 3.</b> Which articles in <code>simplewiki-20141222-pages-articles.txt</code> satisfy the following boolean queries?</p>
+
+<pre>
+outrageous AND fortune
+means AND deceit
+(white OR red ) AND rose AND pluck
+(unhappy OR outrageous OR (good AND your)) AND fortune
+</pre>
+
+<p>Note that I just want the article titles only (not the actual text).</p>
+
+-->
+
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>Similar to the previous assignments, the answers to the questions go
+in <code>bigdata2016w/assignment3.md</code>.</li>
+
+<li>The pairs and stripes implementation should be in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment3</code>.</li>
+
+</ul>
+
+<p>When grading, we will pull your repo and build your code:<p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>Your code should build successfully. We are then going to run your
+code on the Shakesspeare collection:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-assignments-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment3.BuildInvertedIndexCompressed \
+   -input data/Shakespeare.txt -output cs489-2016w-lintool-a3-index-shakespeare
+</pre>
+
+<p>When grading, we will <code>diff</code> the output of your
+implementation with the one in Bespin.</p>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", I would
+recommend that you verify everything above works by performing a clean
+clone of your repo and going through the steps above.</p>
+
+<p>That's it!</p>
+
+<h4 style="padding-top: 10px">Grading</h4>
+
+<p>TBA</p>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
