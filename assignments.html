@@ -438,6 +438,83 @@ your commits and so I can tell if your assignment is late.</p>
 <div>
 <h3>Assignment 2: Counting in Spark <small>due 8:00am January 26</small></h3>
 
+<p>In this assignment you will "port" the MapReduce implementations of
+the bigram frequency count program
+from <a href="http://bespin.io">Bespin</a> over to Spark (in
+Scala). Your starting points
+are <code>ComputeBigramRelativeFrequencyPairs</code>
+and <code>ComputeBigramRelativeFrequencyStripes</code> in
+package <code>io.bespin.java.mapreduce.bigram</code>.</p>
+
+<p>You'll put your code in the
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment2</code>. Since
+you'll be writing Scala code, your source files should go
+into <code>src/main/scala/ca/uwaterloo/cs/bigdata2016w/lintool/assignment2/</code>. Note
+that the repository is designed so that Scala/Spark code will also
+compile with the same Maven build command:</p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>Following the Java implementations, you will write both a "pairs"
+and a "stripes" implementation in Spark. Not that although Spark has a
+different API than MapReduce, the algorithmic concepts are still very
+much applicable. Your pairs and stripes implementation should follow
+the same logic as in the MapReduce implementations. You are welcome to
+use the Spark word count example in Bespin as a starting point,
+particularly for "boilerplate" things like command-line argument
+parsing.</p>
+
+<p>You can verify the correctness of your algoritm by comparing the
+output of the MapReduce implementation with your Spark
+implementation. The output should be the same, modulo formatting
+differences.</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>The pairs and stripes implementation should be in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment2</code>;
+your Scala code should be
+in <code>src/main/scala/ca/uwaterloo/cs/bigdata2016w/lintool/assignment2/</code>.
+There are no questions to answer in this assignment unless there is
+something you would like to communicate with us, and if so, put it
+in <code>assignment2.md</code>.</p>
+
+<p>When grading, we will pull your repo and build your code:<p>
+
+<pre>
+$ mvn clean package
+</pre>
+
+<p>Your code should build successfully. We are then going to run your
+code (for the pairs and stripes implementations, respectively):</p>
+
+<pre>
+$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input data/Shakespeare.txt --output cs489-2016w-lintool-a2-shakespeare-pairs --reducers 5
+
+$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input data/Shakespeare.txt --output cs489-2016w-lintool-a2-shakespeare-stripes --reducers 5
+</pre>
+
+<p><b>Important:</b> Make sure that your code accepts the command-line
+parameters above!<p>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", I would
+recommend that you verify everything above works by performing a clean
+clone of your repo and going through the steps above.</p>
+
+<p>That's it!</p>
+
+<h4 style="padding-top: 10px">Grading</h4>
+
+<p>TBA</p>
+
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
 </section>
