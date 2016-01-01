@@ -44,8 +44,8 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Overview</a></li>
-            <li><a href="organization.html">Organization</a></li>
+            <li><a href="index.html">Overview</a></li>
+            <li class="active"><a href="organization.html">Organization</a></li>
             <li><a href="syllabus.html">Syllabus</a></li>
             <li><a href="assignments.html">Assignments</a></li>
             <li><a href="software.html">Software</a></li>
@@ -58,58 +58,66 @@
 
   <div class="page-header">
     <div style="float: right"/><img src="images/waterloo_logo.png"/></div>
-    <h1>Big Data Infrastructure<br/><small>CS 489/698 (Winter 2016)</small></h1>
+    <h1>Organization <small>CS 489/698 Big Data Infrastructure (Winter 2016)</small></h1>
   </div>
 
-<p>
-<b>Time:</b> Tuesdays and Thursdays, 8:30-9:50am<br/>
-<b>Location:</b> PHY 313<br/>
-<b>Instructor:</b> <a href="https://cs.uwaterloo.ca/~jimmylin/">Jimmy Lin</a> (jimmylin@uwaterloo.ca)
+<h3>Staff</h3>
+
+<p>The instructor for this course is Jimmy Lin. If you're interested
+in my research, here
+is <a href="https://cs.uwaterloo.ca/~jimmylin/">my homepage</a>. The
+best way to get in touch with me is via email
+(jimmylin@uwaterloo.ca).</p>
+
+<p>The TAs for the course are:</p>
+
+<ul>
+  <li>Shichao Jin</li>
+  <li>Jaemyung Kim</li>
+  <li>Adam Roegiest</li>
+</ul>
+
+<h3>Course Materials</h3>
+
+<p>The most recent version of all materials for this course will be
+posted on this website, including the syllabus, readings, slides, and
+assignments. Please check the site frequently for updates.</p>
+
+<p>See the <a href="software.html">"software" page</a> for
+instructions on getting access to MapReduce/Spark. Throughout this
+course, you'll also be using <a href="http://bespin.io">Bespin</a>,
+which is a software library that contains reference implementations of
+"big data" algorithms in MapReduce and Spark.</p>
+
+<p>The textbooks for this course are:</p>
+
+<ul>
+
+ <li><a href="http://mapreduce.cc/">Data-Intensive Text Processing with MapReduce</a> by Jimmy Lin and Chris Dyer [<a href="http://lintool.github.com/MapReduceAlgorithms/ed1n/MapReduce-algorithms.pdf">PDF</a>]</li>
+ <li><a href="http://shop.oreilly.com/product/0636920033448.do">Hadoop: The Definitive Guide</a> (4th Edition) by Tom White [<a href="http://hadoopbook.com/">Book website</a>]</li>
+ <li><a href="http://shop.oreilly.com/product/0636920028512.do">Learning Spark</a> by Holden Karau, Andy Konwinski, Patrick Wendell, Matei Zaharia</lli>
+
+</ul>
+
+
+<p style="padding-top: 20px; padding-bottom: 20px">
+<img height="200" src="images/MR-cover.jpg"/>
+<img height="200" src="images/Hadoop-cover.jpg"/>
+<img height="200" src="images/Spark-cover.jpg"/>
 </p>
 
-<div style="float: right; padding-left: 20px; padding-bottom: 20px"/><img src="images/stack.png"/></div>
+<p>Note that the two O'Reilly books are <i>optional but
+recommended</i>. They are mostly used to help you with the mechanics
+of MapReduce and Spark (API, command-line invocations, etc.). However,
+the same material can be found from a multitude of freely-available
+sources on the web.</p>
 
-<p>Over the past few years, we have seen the emergence of "big data":
-disruptive technologies that have transformed commerce, science, and
-many aspects of society. These developments are enabled by
-infrastructure that allows us to distribute computations across
-hundreds or even thousands of commodity servers. One important advance
-that has made all this possible is the development of abstractions for
-data-intensive computing that allow programmers to reason about
-computations at a massive scale, hiding low-level details such as
-synchronization, data movement, and fault tolerance.</p>
+<p>Readings from other sources such as research papers will be
+assigned as appropriate.</p>
 
-<p><b>What is this course about?</b> This course provides an
-introduction to big data infrastructure for analytics. The focus is
-algorithm design and "thinking at scale": we will cover data mining
-and machine learning techniques as applied to text, graphs, and
-relational data. Most of the course will be taught in a combination of
-MapReduce and Spark, two representative dataflow abstractions for
-large-scale data analysis, although we will introduce alternative
-abstractions such as bulk-synchronous parallel and streaming models
-as well.</p>
+</div>
 
-<p>One might break down the "big data" stack in the manner shown on
-the right. At the bottom resides the execution infrastructure, which
-is responsible for coordinating computations across a cluster
-(examples include MapReduce and Spark). In the middle resides
-analytics infrastructure, which implements data mining and machine
-learning algorithms on top of the execution infrastructure (an example
-would be MLlib in Spark). At the top are the tools data scientists use
-to generate insights, built on top of the analytics
-infrastructure. This course focuses on the middle part &mdash; by the
-end of the course, you will be able to implement basic data mining and
-machine learning algorithms that can operate at scale. Of course,
-effective algorithm design requires understanding the execution
-infrastructure (below) and what the algorithms are used for (above),
-so we will cover the broader context as well.</p>
-
-
-<p style="padding-top: 20px">
-<a href="https://github.com/lintool/bigdata-2016w/" class="btn btn-primary btn-large">Fork me on Github!</a>
-</p>
-
-<p style="padding-bottom: 100px"/>
+<p style="padding-top:100px" />
 
     </div><!-- /.container -->
 
