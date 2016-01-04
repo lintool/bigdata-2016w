@@ -72,7 +72,9 @@ points for the assignments.</p>
 
 <h3>Linux Student CS Environment</h3>
 
-<p>Software needed for the course can be found in the <code>linux.student.cs.uwaterloo.ca</code> environment.</p>
+<p>Software needed for the course can be found in
+the <code>linux.student.cs.uwaterloo.ca</code> environment. We will
+ensure that everything works correctly in this environment.</p>
 
 <p><b>TL;DR.</b> Just set up your environment as follows (in bash; adapt accordingly for your shell of choice):</p>
 
@@ -80,6 +82,9 @@ points for the assignments.</p>
 export PATH=/u0/cs489/packages/spark/bin:/u0/cs489/packages/hadoop/bin:/u0/cs489/packages/maven/bin:/u0/cs489/packages/scala/bin:$PATH
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
 </pre>
+
+<p>You'll want to add the above lines to your shell config file,
+i.e., <code>.bashrc</code>, <code>.bash_profile</code>, etc.</p>
 
 <p><b>Gory Details.</b> For the course we need Java, Scala, Hadoop,
 Spark, and Maven. Java is already available in the default user
@@ -99,9 +104,7 @@ users. Currently, the versions are:</p>
   <li>Maven: 3.3.9</li>
 </ul>
 
-
 </div>
-
 
 <div>
 <h3>Installing Software Locally</h3>
@@ -126,7 +129,17 @@ Scala 2.10), and Maven (any reasonably recent version).</p>
 
 <p>Download the above packages (e.g., using <code>wget</code>), unpack
 the tarball, add their respective <code>bin/</code> directories to
-your path, and you should be go to go.</p>
+your path (and your shell config), and you should be go to go.</p>
+
+<p>Alternatively, you can also install the various packages using a
+package manager, e.g., <code>apt-get</code>, MacPorts, etc. However,
+make sure you get the right version.</p>
+
+<p>Note that we can provide basic installation instructions (per
+above), but course staff cannot provide detailed technical support due
+to the size of the class and the idiosyncrasies of individual
+systems. However, we will make sure everything works properly in the
+Linux Student CS Environment.</p>
 
 </div>
 

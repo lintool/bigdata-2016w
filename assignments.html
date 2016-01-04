@@ -82,7 +82,11 @@
 
 <p>The purpose of this assignment is to serve as a simple warmup
 exercise and to serve as a practice "dry run" for the submission
-procedures of subsequent assignments. The general setup is as follows:
+procedures of subsequent assignments. You'll have to write a bit of
+code but this assignment is mostly about the "mechanics" of setting
+up your Hadoop development environment.</p>
+
+<p>The general setup is as follows:
 you will complete your assignments and check everything into a private
 GitHub repo. Shortly after the assignment deadline, we'll pull your
 repo for grading. Although we will be examining your solutions to
@@ -114,6 +118,10 @@ MapReduce in Spark, and verify output). Assuming you are
 using <code>linux.student.cs.uwaterloo.ca</code> (or if you have
 properly set up your local environment), this task should be as simple
 as copying and pasting commands from the Bespin README.</p>
+
+<p>When running Hadoop, you might get the following warning: "Unable
+to load native-hadoop library for your platform... using builtin-java
+classes where applicable". It's okay: no need to worry.</p>
 
 <h4 style="padding-top: 10px">Time to write some code!</h4>
 
@@ -170,9 +178,11 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    -input data/Shakespeare.txt -output wc
 </pre>
 
-<p>The output should be exactly the same as the same program in
-Bespin, but the difference here is that the code is now in a
-repository under your control, in your own private namespace.<p>
+<p>Note that you'll need to copy over the Shakespeare collection
+in <code>data/</code>. The output should be exactly the same as the
+same program in Bespin, but the difference here is that the code is
+now in a repository under your control, in your own private
+namespace.<p>
 
 <p>Let's make a simple modification to word count: instead of counting
 words, I want to count the occurrences of two-character prefixes of
@@ -187,6 +197,11 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.PrefixCount \
    -input data/Shakespeare.txt -output cs489-2016w-lintool-a0-shakespeare
 </pre>
+
+<p>You shouldn't need to write more than a couple lines of code
+(beyond changing class names and other boilerplate). We'll go over the
+Hadoop API in more detail in class, but the changes should be
+straightforward.</p>
 
 <p>Answer the following questions:</p>
 
