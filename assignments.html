@@ -83,8 +83,10 @@
 <p>The purpose of this assignment is to serve as a simple warmup
 exercise and to serve as a practice "dry run" for the submission
 procedures of subsequent assignments. You'll have to write a bit of
-code but this assignment is mostly about the "mechanics" of setting
-up your Hadoop development environment.</p>
+code but this assignment is mostly about the "mechanics" of setting up
+your Hadoop development environment. In addition to running Hadoop
+locally in either the Linux student CS environment or on your own
+machine, you'll also try running jobs on the Altiscale cluster.</p>
 
 <p>The general setup is as follows:
 you will complete your assignments and check everything into a private
@@ -211,6 +213,33 @@ each occur?</p>
 
 <p><b>Question 2.</b> How frequent does the prefix "li" occur?</p>
 
+<h4 style="padding-top: 10px">Using the Altiscale Cluster</h4>
+
+<p>The <a href="software.html">software page</a> has details on
+getting started with the Altiscale cluster. Register your account and
+follow instructions to set up ssh into the "workspace".  Make sure
+you've properly set up the proxy to view the cluster Resource Manager
+(RM) webapp
+at <a href="http://rm-ia.s3s.altiscale.com:8088/cluster/"><code>http://rm-ia.s3s.altiscale.com:8088/cluster/</code></a>.
+Getting access to the RM webapp is important&mdash;you'll need it to
+track your job status and for debugging purposes.</p>
+
+<p>Once you've ssh'ed into the workspace, check out Bespin and run
+word count:</p>
+
+<pre>
+$ hadoop jar target/bespin-0.1.0-SNAPSHOT.jar io.bespin.java.mapreduce.wordcount.WordCount \
+   -input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt -output wc-jmr-combiner
+</pre>
+
+<p>Note that we're running word count over a larger collection here: a
+10% sample of English Wikipedia totaling 1.3 GB (here's a chance to
+exercise your newly-acquired HDFS skills to confirm for yourself).</p>
+
+<p><b>Question 3.</b> Were you able to successfully run word count on
+the Altiscale cluster and get access to the Resource Manager webapp?
+(Yes or No)</p>
+
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>At this point, you should have a GitHub
@@ -219,7 +248,7 @@ the word count program copied over from Bespin and the new prefix count
 implementation, along with your <code>pom.xml</code>.  Commit these
 files. Next, create a file called <code>assignment1.md</code>
 inside <code>bigdata2016w/</code>. In that file, put your answers to
-the above questions. Use the Markdown annotation format: here's
+the above questions (1&mdash;3). Use the Markdown annotation format: here's
 a <a href="http://daringfireball.net/projects/markdown/basics">simple
 guide</a>.</p>
 
@@ -241,6 +270,10 @@ the main web interface on your repo). Note: do <b>not</b> add my
 primary GitHub
 account <a href="https://github.com/lintool">lintool</a> as a
 collaborator.</p>
+
+<p>Finally, you need to tell us your GitHub account so we can link it
+to you. Submit your user
+name <a href="http://goo.gl/forms/UBIaZNNzHF">here</a>.</p>
 
 <p>And that's it!</p>
 
