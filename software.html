@@ -146,8 +146,38 @@ Linux Student CS Environment.</p>
 <div>
 <h3>Altiscale Cluster</h3>
 
-<p>Information about the Altiscale cluster resources will be added
-here soon.</p>
+<div style="float: right"/><img src="images/altiscale-logo.png"/></div>
+
+<p>In addition to running "toy" Hadoop on a single machine (which
+obviously defeats the point of a distributed framework), we're going
+to be playing with a modest cluster thanks to the generous support of
+Altiscale, which is a "Hadoop-as-a-service" provider. You'll be
+getting an email directly from Altiscale with account information.</p>
+
+<p>Follow the instructions from the email:</p>
+
+<ol>
+
+<li>Set up your web profile.</li>
+
+<li>Follow these instructions to upload your ssh keys: <a href="https://documentation.altiscale.com/uploading-public-key">Uploading and Managing Your Public Key</a></li>
+
+<li>Follow these instructions to ssh into the "workspace": <a href="https://documentation.altiscale.com/connecting-with-ssh">Connecting to the Workbench Using SSH</a>. The workspace is the node from which you submit MapReduce/Spark jobs; it's also where you'll check out code, inspect HDFS data, etc. In class I sometimes refer to this as the "submit node".</li>
+
+<li>Follow these instructions to access the cluster webapps: <a href="https://documentation.altiscale.com/accessing-web-uis-socks">Accessing Web UIs Through a SOCKS Proxy</a>. In particular, you'll need to access the Resource Manager webapp to examine the status of your running jobs.</li>
+
+</ol>
+
+<p>If you've properly configured everything you should now be able to
+ssh into the workspace, something like:</p>
+
+<pre>
+ssh -D 1080 -i ~/.ssh/id_rsa -p 1450 jimmylin@waterloo.z43.altiscale.com 
+</pre>
+
+<p>And you should be able to view the cluster Resource Manager
+(RM) webapp
+at <a href="http://rm-ia.s3s.altiscale.com:8088/cluster/"><code>http://rm-ia.s3s.altiscale.com:8088/cluster/</code></a>.</p>
 
 </div>
 
