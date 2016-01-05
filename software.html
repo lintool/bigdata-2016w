@@ -164,7 +164,8 @@ getting an email directly from Altiscale with account information.</p>
 
 <li>Follow these instructions to ssh into the "workspace": <a href="https://documentation.altiscale.com/connecting-with-ssh">Connecting to the Workbench Using SSH</a>. The workspace is the node from which you submit MapReduce/Spark jobs; it's also where you'll check out code, inspect HDFS data, etc. In class I sometimes refer to this as the "submit node".</li>
 
-<li>Follow these instructions to access the cluster webapps: <a href="https://documentation.altiscale.com/accessing-web-uis-socks">Accessing Web UIs Through a SOCKS Proxy</a>. In particular, you'll need to access the Resource Manager webapp to examine the status of your running jobs.</li>
+<li>Follow these instructions to access the cluster webapps: <a href="https://documentation.altiscale.com/accessing-web-uis-socks">Accessing Web UIs Through a SOCKS Proxy</a>. In particular, you'll need to access the Resource Manager webapp to examine the status of your running jobs at <a href="http://rm-ia.s3s.altiscale.com:8088/cluster/"><code>http://rm-ia.s3s.altiscale.com:8088/cluster/</code></a>.</p>
+</li>
 
 </ol>
 
@@ -175,9 +176,23 @@ ssh into the workspace, something like:</p>
 ssh -D 1080 -i ~/.ssh/id_rsa -p 1450 jimmylin@waterloo.z43.altiscale.com 
 </pre>
 
-<p>And you should be able to view the cluster Resource Manager
-(RM) webapp
-at <a href="http://rm-ia.s3s.altiscale.com:8088/cluster/"><code>http://rm-ia.s3s.altiscale.com:8088/cluster/</code></a>.</p>
+<p>To properly set up your environment, once you ssh into the
+workspace, add the following lines to
+your <code>.bash_profile</code>:</p>
+
+<pre>
+PATH=$PATH:$HOME/bin
+
+export PATH
+export SCALA_HOME=/opt/scala
+export YARN_CONF_DIR=/etc/hadoop/
+export SPARK_HOME=/opt/spark/
+
+cd $SPARK_HOME/test_spark && ./init_spark.sh
+cd
+</pre>
+
+<p>That's it!</p>
 
 </div>
 
