@@ -180,11 +180,12 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    -input data/Shakespeare.txt -output wc
 </pre>
 
-<p>Note that you'll need to copy over the Shakespeare collection
-in <code>data/</code>. The output should be exactly the same as the
-same program in Bespin, but the difference here is that the code is
-now in a repository under your control, in your own private
-namespace.<p>
+<p>You should be running this in the Linux student CS environment or
+on your own machine. Note that you'll need to copy over the
+Shakespeare collection in <code>data/</code>. The output should be
+exactly the same as the same program in Bespin, but the difference
+here is that the code is now in a repository under your control, in
+your own private namespace.<p>
 
 <p>Let's make a simple modification to word count: instead of counting
 words, I want to count the occurrences of two-character prefixes of
@@ -209,9 +210,11 @@ straightforward.</p>
 
 <p><b>Question 1.</b> In the Shakespeare collection, what are the
 three most frequent two character prefixes and how many times does
-each occur?</p>
+each occur? (Remember when I mentioned "command line"-fu skills in
+class? This is where such skills will come in handy...)</p>
 
-<p><b>Question 2.</b> How frequent does the prefix "li" occur?</p>
+<p><b>Question 2.</b> In the Shakespeare collection, how frequent does
+the prefix "li" occur?</p>
 
 <h4 style="padding-top: 10px">Using the Altiscale Cluster</h4>
 
@@ -240,6 +243,22 @@ exercise your newly-acquired HDFS skills to confirm for yourself).</p>
 the Altiscale cluster and get access to the Resource Manager webapp?
 (Yes or No)</p>
 
+<p>Now switch into your own <code>bigdata2016w/</code> repo and run
+your prefix count program on the sample Wikipedia data:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.PrefixCount \
+   -input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a0-wiki
+</pre>
+
+<p><b>Question 4.</b> In the sample Wikipedia collection, what are the
+three most frequent two character prefixes and how many times does
+each occur?</p>
+
+<p><b>Question 5.</b> In the sample Wikipedia collection, How frequent
+does the prefix "li" occur?</p>
+
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>At this point, you should have a GitHub
@@ -248,7 +267,7 @@ the word count program copied over from Bespin and the new prefix count
 implementation, along with your <code>pom.xml</code>.  Commit these
 files. Next, create a file called <code>assignment1.md</code>
 inside <code>bigdata2016w/</code>. In that file, put your answers to
-the above questions (1&mdash;3). Use the Markdown annotation format: here's
+the above questions (1&mdash;5). Use the Markdown annotation format: here's
 a <a href="http://daringfireball.net/projects/markdown/basics">simple
 guide</a>.</p>
 

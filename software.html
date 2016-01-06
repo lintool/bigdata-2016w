@@ -158,7 +158,7 @@ getting an email directly from Altiscale with account information.</p>
 
 <ol>
 
-<li>Set up your web profile.</li>
+<li>Set up your web profile at <a href="http://portal.altiscale.com/">Altiscale Portal</a>.</li>
 
 <li>Follow these instructions to upload your ssh keys: <a href="https://documentation.altiscale.com/uploading-public-key">Uploading and Managing Your Public Key</a></li>
 
@@ -169,15 +169,33 @@ getting an email directly from Altiscale with account information.</p>
 
 </ol>
 
-<p>If you've properly configured everything you should now be able to
-ssh into the workspace, something like:</p>
+<p><b>The TL;DR version.</b> Configure your <code>~/.ssh/config file</code> as follows:</p>
 
 <pre>
-ssh -D 1080 -i ~/.ssh/id_rsa -p 1450 jimmylin@waterloo.z43.altiscale.com 
+Host altiscale
+User YOUR_USERNAME
+Hostname waterloo.z43.altiscale.com
+Port 1450
+IdentityFile ~/.ssh/id_rsa
+Compression yes
+ServerAliveInterval 15
+DynamicForward localhost:1080
+TCPKeepAlive yes
+Protocol 2,1
 </pre>
 
-<p>To properly set up your environment, once you ssh into the
-workspace, add the following lines to
+<p>And you should be able to ssh into the workspace:</p>
+
+<pre>
+ssh altiscale
+</pre>
+
+<p><b>Note:</b> the workspace host and port from your web profile
+(on the Altiscale Portal) may not be correct, but the above
+information is.</p>
+
+<p>Once you ssh into the workspace, to properly set up your
+environment, add the following lines to
 your <code>.bash_profile</code>:</p>
 
 <pre>
