@@ -190,10 +190,23 @@ your own private namespace.<p>
 <p>Let's make a simple modification to word count: instead of counting
 words, I want to count the occurrences of two-character prefixes of
 words, i.e., the first two characters. That is, I want to know how
-many words begin with "aa", "ab", "ac", etc., all the way to
-"zz". Create a program called <code>PrefixCount</code> in the
-package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment0</code>. I
-should be able to run your program as follows:</p>
+many words begin with "aa", "ab", "ac", etc., all the way to "zz"
+(including special characters, etc.). Create a program
+called <code>PrefixCount</code> in the
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment0</code> that does this.</p>
+
+<p>To be clear, the <code>WordCount</code> defines a "word" as
+follows:</p>
+
+<pre>
+String w = itr.nextToken().toLowerCase().replaceAll("(^[^a-z]+|[^a-z]+$)", "");
+</pre>
+
+<p>Simply take whatever <code>w.substring(0, 2)</code> gives you as a
+prefix. This means, of course, that you should ignore single
+characters.</p>
+
+<p>We should be able to run your program as follows:</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -360,15 +373,16 @@ symmetrical). If seeing <i>x</i> gives you no information about seeing
 <i>y</i>, then <i>x</i> and <i>y</i> are independent and the PMI is
 zero.</p>
 
-<p>Your implementation should be in Java.</p>
-
-<p>Write a program that computes the PMI of words in the
+<p>Write a program (two separate implementations, actually&mdash;more details below)
+that computes the PMI of words in the
 <code>data/Shakespeare.txt</code> collection that's used in the Bespin
 demos and the previous assignment. To be more specific, the event
 we're after is <i>x</i> occurring on a line in the file or <i>x</i>
 and <i>y</i> co-occurring on a line. That is, if a line contains A, A,
 B; then there is only one instance of A and B appearing together, not
 two. Use the same definition of "word" as in the word count demo.</p>
+
+<p>Your implementation should be in Java.</p>
 
 <p>Two additional important details:</p>
 
@@ -418,7 +432,7 @@ package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>):</p>
   combiners. Name this implementation <code>PairsPMI</code>.</li>
 
   <li>A "stripes" implementation.  The implementation must use
-  combiners. <code>StripesPMI</code>.</li>
+  combiners. Name this implementation <code>StripesPMI</code>.</li>
 
 </ol>
 
@@ -435,31 +449,31 @@ log base 10.</p>
 
 <p>Answer the following questions:</p>
 
-<p><b>Question 1.</b> <i>Briefly</i> describe in prose your solution,
+<p><b>Question 1.</b> (6 points) <i>Briefly</i> describe in prose your solution,
 both the pairs and stripes implementation. For example: how many
 MapReduce jobs? What are the input records? What are the intermediate
 key-value pairs? What are the final output records? A paragraph for
 each implementation is about the expected length.</p>
 
-<p><b>Question 2.</b> What is the running time of the complete pairs
+<p><b>Question 2.</b> (2 points) What is the running time of the complete pairs
 implementation? What is the running time of the complete stripes
 implementation? (Tell me where you ran these experiments,
 e.g., <code>linux.student.cs.uwaterloo.ca</code> or your own
 laptop.)</p>
 
-<p><b>Question 3.</b> Now disable all combiners. What is the running
+<p><b>Question 3.</b> (2 points) Now disable all combiners. What is the running
 time of the complete pairs implementation now? What is the running
 time of the complete stripes implementation? (Tell me where you ran
 these experiments, e.g., <code>linux.student.cs.uwaterloo.ca</code> or
 your own laptop.)</p>
 
-<p><b>Question 4.</b> How many distinct PMI pairs did you extract?</p>
+<p><b>Question 4.</b> (3 points) How many distinct PMI pairs did you extract?</p>
 
-<p><b>Question 5.</b> What's the pair (x, y) (or pairs if there are
+<p><b>Question 5.</b> (3 points) What's the pair (x, y) (or pairs if there are
 ties) with the highest PMI? Write a sentence or two to explain why
 such a high PMI.</p>
 
-<p><b>Question 6.</b> What are the three words that have the highest
+<p><b>Question 6.</b> (6 points) What are the three words that have the highest
 PMI with "tears" and "death"? And what are the PMI values?</p>
 
 <p>Note that you can compute the answer to questions 4&mdash;6 however
@@ -496,9 +510,12 @@ job.getConfiguration().set("mapreduce.reduce.memory.mb", "3072");
 job.getConfiguration().set("mapreduce.reduce.java.opts", "-Xmx3072m");
 </pre>
 
-<p>
+<p>What the last four options do is fairly obvious. The first sets
+the <i>maximum</i> split size to be 64 MB. What effect does that have?
+(Hint, consider the physical execution of MapReduce programs we
+discussed in class)</p>
 
-<p><b>Question 7.</b> In the Wikipedia sample, what are the three
+<p><b>Question 7.</b> (6 points) In the Wikipedia sample, what are the three
 words that have the highest PMI with "waterloo" and "toronto"? And
 what are the PMI values?</p>
 
@@ -528,7 +545,7 @@ $ mvn clean package
 your code (both the pairs and stripes implementations).</p>
 
 <p>We're going to run your code on the Linux student CS environment as
-follows:</p>
+follows (we will make sure the collection is there):</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -546,11 +563,11 @@ follows:</p>
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.PairsPMI \
-   -input data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-pairs -reducers 5
+   -input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-pairs -reducers 5
 
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.StripesPMI \
-   -input data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-stripes -reducers 5
+   -input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-stripes -reducers 5
 </pre>
 
 <p><b>Important:</b> Make sure that your code accepts the command-line
@@ -566,7 +583,7 @@ interface. Before you consider the assignment "complete", verify
 everything above works by performing a clean clone of your repo and
 going through the steps above.</p>
 
-<p>That's it! There's no need to send me anything&mdash;we already know
+<p>That's it! There's no need to send us anything&mdash;we already know
 your username from the first assignment. Note that everything should
 be committed and pushed to origin before the deadline.</p>
 
@@ -590,7 +607,28 @@ be committed and pushed to origin before the deadline.</p>
 
 <h4 style="padding-top: 10px">Grading</h4>
 
-<p>TBA</p>
+<p>This assignment is worth a total of 50 points, broken down as
+follows:</p>
+
+<ul>
+
+  <li>The questions above are worth a total of 28 points.</li>
+
+  <li>Getting your code to compile and successfully run is worth
+  another 16 points (4 points each for the pairs and stripes
+  implementation in the Linux student CS environment and on
+  Altiscale). We will make a minimal effort to fix <i>trivial</i>
+  issues with your code (e.g., a typo)&mdash;and deduct
+  points&mdash;but <b>will not</b> spend time debugging your code. It
+  is your responsibility to make sure your code runs: we have taken
+  care to specify exactly how we will run your code&mdash;if anything
+  is unclear, it is your responsibility to seek clarification.</li>
+
+  <li>Another 6 points is allotted to us verifying the output of your
+  program in way that we will not tell you (i.e., think blind test
+  cases).</li>
+
+</ul>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
