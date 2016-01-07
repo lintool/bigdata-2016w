@@ -368,9 +368,46 @@ demos and the previous assignment. To be more specific, the event
 we're after is <i>x</i> occurring on a line in the file or <i>x</i>
 and <i>y</i> co-occurring on a line. That is, if a line contains A, A,
 B; then there is only one instance of A and B appearing together, not
-two. To reduce the number of spurious pairs, we are only interested in
-pairs of words that co-occur in ten or more lines. Use the same
-definition of "word" as in the word count demo.</p>
+two. Use the same definition of "word" as in the word count demo.</p>
+
+<p>Two additional important details:</p>
+
+<ul>
+
+<li>To reduce the number of spurious pairs, we are only interested in
+pairs of words that co-occur in ten or more lines.</li>
+
+<li>To reduce the computational complexity of the problem, we are only
+going to consider up to the first 100 words in each line.</li>
+
+</ul>
+
+<p>Just to make sure we're all on the same page, use this as the
+starting point of your mapper:</p>
+
+<pre>
+    @Override
+    public void map(LongWritable key, Text value, Context context)
+        throws IOException, InterruptedException {
+      String line = ((Text) value).toString();
+      StringTokenizer itr = new StringTokenizer(line);
+
+      int cnt = 0;
+      Set<String> set = Sets.newHashSet();
+      while (itr.hasMoreTokens()) {
+        cnt++;
+        String w = itr.nextToken().toLowerCase().replaceAll("(^[^a-z]+|[^a-z]+$)", "");
+        if (w.length() == 0) continue;
+        set.add(w);
+        if (cnt >= 100) break;
+      }
+
+      String[] words = new String[set.size()];
+      words = set.toArray(words);
+
+      // Your code goes here...
+   }
+</pre>
 
 <p>You will build two versions of the program (put both in
 package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>):</p>
@@ -390,41 +427,80 @@ actually easier in your implementation to compute both values, so
 don't worry about duplicates. Also, use <code>TextOutputFormat</code>
 so the results of your program are human readable.</p>
 
+<p>Make sure that the pairs implementation and the stripes
+implementation give the same answers!</p>
+
 <p><b>Note:</b> just so everyone's answer is consistent, please use
 log base 10.</p>
 
 <p>Answer the following questions:</p>
 
-<p><b>Question 0.</b> <i>Briefly</i> describe in prose your solution,
+<p><b>Question 1.</b> <i>Briefly</i> describe in prose your solution,
 both the pairs and stripes implementation. For example: how many
 MapReduce jobs? What are the input records? What are the intermediate
 key-value pairs? What are the final output records? A paragraph for
 each implementation is about the expected length.</p>
 
-<p><b>Question 1.</b> What is the running time of the complete pairs
+<p><b>Question 2.</b> What is the running time of the complete pairs
 implementation? What is the running time of the complete stripes
 implementation? (Tell me where you ran these experiments,
 e.g., <code>linux.student.cs.uwaterloo.ca</code> or your own
 laptop.)</p>
 
-<p><b>Question 2.</b> Now disable all combiners. What is the running
+<p><b>Question 3.</b> Now disable all combiners. What is the running
 time of the complete pairs implementation now? What is the running
 time of the complete stripes implementation? (Tell me where you ran
 these experiments, e.g., <code>linux.student.cs.uwaterloo.ca</code> or
 your own laptop.)</p>
 
-<p><b>Question 3.</b> How many distinct PMI pairs did you extract?</p>
+<p><b>Question 4.</b> How many distinct PMI pairs did you extract?</p>
 
-<p><b>Question 4.</b> What's the pair (x, y) (or pairs if there are
+<p><b>Question 5.</b> What's the pair (x, y) (or pairs if there are
 ties) with the highest PMI? Write a sentence or two to explain why
 such a high PMI.</p>
 
-<p><b>Question 5.</b> What are the three words that have the highest
+<p><b>Question 6.</b> What are the three words that have the highest
 PMI with "tears" and "death"? And what are the PMI values?</p>
 
-<p>Note that you can compute the answer to questions 3&mdash;5 however
+<p>Note that you can compute the answer to questions 4&mdash;6 however
 you wish: a helper Java program, a Python script, command-line
-manipulation, etc.</p>
+one-liner, etc.</p>
+
+<h4 style="padding-top: 10px">Running on the Altiscale cluster</h4>
+
+<p>Now, on the Altiscale cluster, run your pairs and stripes
+implementation on the sample Wikipedia collection stored on HDFS
+at <code>/shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt</code>. Note
+that in the Wikipedia collection, each article is on a line. Also, the
+"first 100 words" restriction will definitely apply here (whereas in
+the Shakespeare collection, all the lines contained fewer than 100
+words, so it was a no-op).</p>
+
+<p>Make sure your code runs on this larger dataset. Assuming that
+there aren't many competing jobs on the cluster, your programs should
+not take more than 20 minutes to run. If your job is taking much
+longer than that, then please kill it so it doesn't waste resources
+and slow other people's jobs down. Obviously, if the cluster is really
+busy or if there's a long list of queued jobs, your job will take
+longer, so use your judgement here. The only point is: be nice. It's a
+shared resource, and let's not let runaway jobs slow everyone
+down.</p>
+
+<p>One final detail, set your MapReduce job parameters as follows:</p>
+
+<pre>
+job.getConfiguration().setInt("mapred.max.split.size", 1024 * 1024 * 64);
+job.getConfiguration().set("mapreduce.map.memory.mb", "3072");
+job.getConfiguration().set("mapreduce.map.java.opts", "-Xmx3072m");
+job.getConfiguration().set("mapreduce.reduce.memory.mb", "3072");
+job.getConfiguration().set("mapreduce.reduce.java.opts", "-Xmx3072m");
+</pre>
+
+<p>
+
+<p><b>Question 7.</b> In the Wikipedia sample, what are the three
+words that have the highest PMI with "waterloo" and "toronto"? And
+what are the PMI values?</p>
 
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
@@ -448,8 +524,11 @@ package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>.</li>
 $ mvn clean package
 </pre>
 
-<p>Your code should build successfully. We are then going to run your
-code (for the pairs and stripes implementations, respectively):</p>
+<p>Your code should build successfully. We are then going to check
+your code (both the pairs and stripes implementations).</p>
+
+<p>We're going to run your code on the Linux student CS environment as
+follows:</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -461,19 +540,35 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    -input data/Shakespeare.txt -output cs489-2016w-lintool-a1-shakespeare-stripes -reducers 5
 </pre>
 
+<p>We're going to run your code on the Altiscale cluster as
+follows:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.PairsPMI \
+   -input data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-pairs -reducers 5
+
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.StripesPMI \
+   -input data/enwiki-20151201-pages-articles-0.1sample.txt -output cs489-2016w-lintool-a1-wiki-stripes -reducers 5
+</pre>
+
 <p><b>Important:</b> Make sure that your code accepts the command-line
 parameters above!<p>
 
+<p>We will examine your output to verify that your code is running
+correctly. We're not going to tell you exactly how, so think of these
+as blind test cases.</p>
+
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
-interface. Before you consider the assignment "complete", I would
-recommend that you verify everything above works by performing a clean
-clone of your repo and going through the steps above.</p>
+interface. Before you consider the assignment "complete", verify
+everything above works by performing a clean clone of your repo and
+going through the steps above.</p>
 
-<p>That's it! There's no need to send me anything&mdash;I already know
+<p>That's it! There's no need to send me anything&mdash;we already know
 your username from the first assignment. Note that everything should
-be committed and pushed to origin before the deadline. Git timestamps
-your commits and so I can tell if your assignment is late.</p>
+be committed and pushed to origin before the deadline.</p>
 
 <h4 style="padding-top: 10px">Hints</h4>
 
@@ -482,7 +577,7 @@ your commits and so I can tell if your assignment is late.</p>
   frequency and co-occurrence matrix computation
   in <a href="http://bespin.io">Bespin</a>?</li>
 
-  <li>Your solution may require more than one MapReduce job.</li>
+  <li>Your solution will likely require more than one MapReduce job.</li>
 
   <li>You may have to load in "side data"?</li>
 
