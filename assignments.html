@@ -272,6 +272,13 @@ each occur?</p>
 <p><b>Question 5.</b> In the sample Wikipedia collection, How frequent
 does the prefix "li" occur?</p>
 
+<p>Note that the Altiscale cluster is a shared resource, and how fast
+your jobs complete will depend on how busy it is. You're advised to
+begin the assignment early as to avoid long job queues. "I wasn't able
+to complete the assignment because there were too many jobs running on
+the cluster" will not be accepted as an excuse if your assignment is
+late.</p>
+
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>At this point, you should have a GitHub
@@ -294,6 +301,14 @@ and <code>assignment1.md</code>.</p>
 the master branch. Push your repo to GitHub. You can verify that it's
 there by logging into your GitHub account in a web browser: your
 assignment should be viewable in the web interface.</p>
+
+<p>For this (and the following assignments) there are two parts, one
+that can be completed locally, and another that requires the Altiscale
+cluster. For the first, make sure that your code runs in the Linux
+Student CS environment (even if you do development on your own
+machine), which is where we will be doing the grading. "But it runs on
+my laptop!" will not be accepted as an excuse if we can't get your
+code to run.</p>
 
 <p>Almost there! Add the
 user <a href="https://github.com/teachtool">teachtool</a> a
@@ -519,6 +534,13 @@ discussed in class)</p>
 words that have the highest PMI with "waterloo" and "toronto"? And
 what are the PMI values?</p>
 
+<p>It's worth noting again: the Altiscale cluster is a shared
+resource, and how fast your jobs complete will depend on how busy it
+is. You're advised to begin the assignment early as to avoid long job
+queues. "I wasn't able to complete the assignment because there were
+too many jobs running on the cluster" will not be accepted as an
+excuse if your assignment is late.</p>
+
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>Please follow these instructions carefully!</p>
@@ -556,6 +578,11 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment1.StripesPMI \
    -input data/Shakespeare.txt -output cs489-2016w-lintool-a1-shakespeare-stripes -reducers 5
 </pre>
+
+<p>Make sure that your code runs in the Linux Student CS environment
+(even if you do development on your own machine), which is where we
+will be doing the grading. "But it runs on my laptop!" will not be
+accepted as an excuse if we can't get your code to run.</p>
 
 <p>We're going to run your code on the Altiscale cluster as
 follows:</p>
