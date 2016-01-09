@@ -104,10 +104,11 @@ delays in the request verification process.</p>
 
 <h4 style="padding-top: 10px">Setting up Hadoop and Spark</h4>
 
-<p>Hadoop and Spark are already set up in
+<p>Hadoop and Spark are already installed in
 the <code>linux.student.cs.uwaterloo.ca</code>
-environment. Alternatively, you may wish to install everything locally
-on your own machine. See <a href="software.html">this page</a> for
+environment (you just need to add some paths).
+Alternatively, you may wish to install everything locally
+on your own machine. For both, see the <a href="software.html">software page</a> for
 more details.</p>
 
 <p>Bespin is a library that contains reference implementations of "big
@@ -694,10 +695,18 @@ use the Spark word count example in Bespin as a starting point,
 particularly for "boilerplate" things like command-line argument
 parsing.</p>
 
+<p>Make sure your implementation runs in the Linux student CS
+environment on the Shakespeare collection and also on sample
+Wikipedia
+file <code>/shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt</code>
+on HDFS in the Altiscale cluster. Note that submitting Spark jobs on
+the Altiscale cluster requires a rather arcane command-line
+invocation&nbsp;see the <a href="software.html">software page</a> for
+more details.</p>
+
 <p>You can verify the correctness of your algoritm by comparing the
 output of the MapReduce implementation with your Spark
-implementation. The output should be the same, modulo formatting
-differences.</p>
+implementation. The output should be the same.</p>
 
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
@@ -717,8 +726,11 @@ in <code>assignment2.md</code>.</p>
 $ mvn clean package
 </pre>
 
-<p>Your code should build successfully. We are then going to run your
-code (for the pairs and stripes implementations, respectively):</p>
+<p>Your code should build successfully. We are then going to check
+your code (both the pairs and stripes implementations).</p>
+
+<p>We're going to run your code on the Linux student CS environment as
+follows (we will make sure the collection is there):</p>
 
 <pre>
 $ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs \
@@ -726,6 +738,25 @@ $ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeB
 
 $ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input data/Shakespeare.txt --output cs489-2016w-lintool-a2-shakespeare-stripes --reducers 5
+</pre>
+
+<p>Make sure that your code runs in the Linux Student CS environment
+(even if you do development on your own machine), which is where we
+will be doing the grading. "But it runs on my laptop!" will not be
+accepted as an excuse if we can't get your code to run.</p>
+
+<p>We're going to run your code on the Altiscale cluster as follows
+(note we add <code>--num-executors 15</code> to specify the number of
+executors):</p>
+
+<pre>
+$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
+   --output cs489-2016w-lintool-a2-wiki-pairs --reducers 5 --num-executors 15
+
+$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
+   --output cs489-2016w-lintool-a2-wiki-stripes --reducers 5 --num-executors 15
 </pre>
 
 <p><b>Important:</b> Make sure that your code accepts the command-line
@@ -741,7 +772,13 @@ clone of your repo and going through the steps above.</p>
 
 <h4 style="padding-top: 10px">Grading</h4>
 
-<p>TBA</p>
+<p>This assignment is worth a total of 20 points, broken down as
+follows:</p>
+
+<ul>
+  <li>The pairs implementation running locally is worth 6 points; the stripes implementation running locally is worth another 6 points.</li>
+  <li>The pairs implementation running on Altiscale is worth 4 points; the stripes implementation running on Altiscale is worth another 4 points.</li>
+</ul>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
