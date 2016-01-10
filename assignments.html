@@ -321,7 +321,8 @@ guide</a>.</p>
 or <code>target/</code> (or any results that you may have generated),
 so your repo should be very compact &mdash; it should only have four
 files: two Java source files, <code>pom.xml</code>,
-and <code>assignment0.md</code>.</p>
+and <code>assignment0.md</code>. You can add a <code>.gitignore</code>
+file if you wish.</p>
 
 <p>For this and all subsequent assignments, make sure everything is on
 the master branch. Push your repo to GitHub. You can verify that it's
@@ -350,26 +351,23 @@ name <a href="http://goo.gl/forms/UBIaZNNzHF">here</a>.</p>
 
 <p>And that's it!</p>
 
-<p>Just to give you an idea of how we'll be grading future
-assignments: we will clone your repo, build your code:</p>
+<p>To give you an idea of how we'll be grading this and future
+assignments&mdash;we will clone your repo and use the above check
+scripts:</p>
 
-<pre>
-$ mvn clean package
-</pre>
+<ul>
 
-<p>And then run:</p>
+<li><a href="assignments/check_assignment0_public_linux.py"><code>check_assignment0_public_linux.py</code></a>
+in the Linux Student CS environment.</li>
 
-<pre>
-$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
-   ca.uwaterloo.cs.bigdata2016w.lintool.assignment0.PrefixCount \
-   -input data/Shakespeare.txt -output cs489-2016w-lintool-a0-shakespeare
-</pre>
+<li><a href="assignments/check_assignment0_public_altiscale.py"><code>check_assignment0_public_altiscale.py</code></a> on the Altiscale cluster.</li>
+
+</ul>
 
 <p>We'll make sure the data files are in the right place, and once the
-code completes, we will verify the output. To make sure everything is
-in the proper place, you should do a fresh clone, i.e., clone your own
-repo, but in a different location, and run through these same
-steps. If it works for you, it'll work for us.</p>
+code completes, we will verify the output. It is highly recommend that
+you run these check scripts: if it doesn't work for you, it won't work
+for us either.</p>
 
 <p>As mentioned above, one main purpose of this assignment is to
 provide a practice "dry run" of how assignments will be submitted in
@@ -394,6 +392,13 @@ that everything should go into the package namespace
 <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment1</code>
 (obviously, replace <code>lintool</code> with your actual GitHub
 username.</p>
+
+<p>Note that the point of assignment 0 was to familiarize your with
+GitHub and the Hadoop development environment. We will work through
+issues with you, but starting this assignment, excuses along the lines
+of "I couldn't get my repo set up properly", "I couldn't figure out
+how to push my assignment to GitHub", etc. will not be accepted. It is
+your responsibility to sort through any mechanics issue you have.</p>
 
 <p>Before staring this assignment, it is <i>highly recommended</i>
 that you look at the implementations of bigram relative frequency and
