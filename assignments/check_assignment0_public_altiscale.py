@@ -13,6 +13,7 @@ import os
 from subprocess import call
 import re
 
+# add prefix 'a' if github-username starts from a numeric character
 def convertusername(u):
   return re.sub(r'^(\d+.*)',r'a\1',u)
 
