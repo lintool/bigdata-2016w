@@ -11,6 +11,10 @@ Usage:
 import sys
 import os
 from subprocess import call
+import re
+
+def convertusername(u):
+  return re.sub(r'^(\d+.*)',r'a\1',u)
 
 def check_a0(u):
     """Run assignment0 in linux environment"""
@@ -31,7 +35,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print "usage: "+sys.argv[0]+" [github-username]"
         exit(1)
-    u = sys.argv[1]
+    u = convertusername(sys.argv[1])
     check_a0(u)
   except Exception as e:
     print(e)
