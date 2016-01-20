@@ -799,16 +799,18 @@ accepted as an excuse if we can't get your code to run.</p>
 
 <p>We're going to run your code on the Altiscale cluster as follows
 (note we add <code>--num-executors 15</code> to specify the number of
-executors):</p>
+executors; also note that we use the <code>my-spark-submit</code>
+launch script&mdash;see the <a href="software.html">software</a>
+page for details):</p>
 
 <pre>
-$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs \
+$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs --num-executors 15 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
-   --output cs489-2016w-lintool-a2-wiki-pairs --reducers 5 --num-executors 15
+   --output cs489-2016w-lintool-a2-wiki-pairs --reducers 5
 
-$ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes \
+$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes --num-executors 15 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
-   --output cs489-2016w-lintool-a2-wiki-stripes --reducers 5 --num-executors 15
+   --output cs489-2016w-lintool-a2-wiki-stripes --reducers 5
 </pre>
 
 <p><b>Important:</b> Make sure that your code accepts the command-line

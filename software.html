@@ -210,7 +210,31 @@ cd $SPARK_HOME/test_spark && ./init_spark.sh
 cd
 </pre>
 
-<p>That's it!</p>
+<p><b>Running Spark on Altiscale.</b> Running Spark on Altiscale
+requires a bit more setup, for the gory details, checkout
+out <a href="https://documentation.altiscale.com/spark-1-4">the
+documentation</a>. This is the TL;DR version:</p>
+
+<p>In your workspace home directory, you should have
+a <code>bin/</code> directory. Create a script there
+called <code>my-spark-submit</code> with the following:</p>
+
+<pre>
+#!/bin/bash
+
+/opt/spark/bin/spark-submit --queue waterloo --master yarn --deploy-mode cluster \
+  --driver-class-path $(find /opt/hadoop/share/hadoop/mapreduce/lib/hadoop-lzo-* | head -n 1) "$@"
+</pre>
+
+<p>Then <code>chmod</code> so that it's executable. Now you can
+use <code>my-spark-submit</code> instead of <code>spark-submit</code>,
+and everything should work. The main issue is that running Spark on
+the Altiscale cluster requires a host of command-line parameters to
+direct Spark to the right cluster configs. You can add those
+parameters every time, but the <code>my-spark-submit</code> script
+simplifies the process for you. It takes whatever Spark command-line
+parameters you specify, prepends all the "boilerplate" ones, and
+actually runs <code>spark-submit</code>.</p>
 
 </div>
 
