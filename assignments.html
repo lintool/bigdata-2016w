@@ -725,9 +725,17 @@ from <a href="http://bespin.io">Bespin</a> over to Spark (in
 Scala). Your starting points
 are <code>ComputeBigramRelativeFrequencyPairs</code>
 and <code>ComputeBigramRelativeFrequencyStripes</code> in
-package <code>io.bespin.java.mapreduce.bigram</code>.</p>
+package <code>io.bespin.java.mapreduce.bigram</code> (in Java).
+You are welcome to build on the <code>BigramCount</code> (Scala)
+implementation <a href="https://github.com/lintool/bespin/blob/master/src/main/scala/io/bespin/scala/spark/bigram/BigramCount.scala">here</a>
+for tokenization and "boilerplate" code like command-line argument
+parsing. To be consistent in tokenization, you should copy over
+the <code>Tokenizer</code> trait
+<a href="https://github.com/lintool/bespin/blob/master/src/main/scala/io/bespin/scala/util/Tokenizer.scala">here</a>. You'll
+also need to grab missing Maven dependencies
+from <a href="https://github.com/lintool/bespin/blob/master/pom.xml">here</a>.</p>
 
-<p>You'll put your code in the
+<p>Put your code in the
 package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment2</code>. Since
 you'll be writing Scala code, your source files should go
 into <code>src/main/scala/ca/uwaterloo/cs/bigdata2016w/lintool/assignment2/</code>. Note
@@ -742,10 +750,8 @@ $ mvn clean package
 and a "stripes" implementation in Spark. Not that although Spark has a
 different API than MapReduce, the algorithmic concepts are still very
 much applicable. Your pairs and stripes implementation should follow
-the same logic as in the MapReduce implementations. You are welcome to
-use the Spark word count example in Bespin as a starting point,
-particularly for "boilerplate" things like command-line argument
-parsing.</p>
+the same logic as in the MapReduce implementations. In particular,
+your program should only take one pass through the input data.</p>
 
 <p>Make sure your implementation runs in the Linux student CS
 environment on the Shakespeare collection and also on sample
@@ -798,23 +804,43 @@ will be doing the grading. "But it runs on my laptop!" will not be
 accepted as an excuse if we can't get your code to run.</p>
 
 <p>We're going to run your code on the Altiscale cluster as follows
-(note we add <code>--num-executors 15</code> to specify the number of
+(note we add <code>--num-executors 10</code> to specify the number of
 executors; also note that we use the <code>my-spark-submit</code>
 launch script&mdash;see the <a href="software.html">software</a>
 page for details):</p>
 
 <pre>
-$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs --num-executors 15 \
+$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyPairs --num-executors 10 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
-   --output cs489-2016w-lintool-a2-wiki-pairs --reducers 5
+   --output cs489-2016w-lintool-a2-wiki-pairs --reducers 10
 
-$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes --num-executors 15 \
+$ my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment2.ComputeBigramRelativeFrequencyStripes --num-executors 10 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
-   --output cs489-2016w-lintool-a2-wiki-stripes --reducers 5
+   --output cs489-2016w-lintool-a2-wiki-stripes --reducers 10
 </pre>
 
 <p><b>Important:</b> Make sure that your code accepts the command-line
 parameters above!<p>
+
+<p>Brief explanation about the relationship
+between <code>--num-executors</code>
+and <code>--reducers</code>. The <code>--num-executors</code> flag
+specifies the number of Spark workers that you allocate for this
+particular job. The <code>--reducers</code> flag is the amount of
+parallelism that you set in your program in the reduce
+stage. If <code>--num-executors</code> is larger
+than <code>--reducers</code>, some of the workers will be sitting
+idle, since you've allocated more workers for the job than the
+parallelism you've specified in your
+program. If <code>--reducers</code> is larger
+than <code>--num-executors</code>, then your reduce tasks will queue
+up at the workers, i.e., a worker will be assigned more than one
+reduce task. In the above example we set the two equal.</p>
+
+<p>Note that the setting of these two parameters should not affect the
+correctness of your program. The setting of ten above is a reasonable
+middle ground between having your jobs finish in a reasonable amount
+of time and not monopolizing cluster resources.</p>
 
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
