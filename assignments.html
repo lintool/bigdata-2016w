@@ -766,6 +766,17 @@ more details.</p>
 output of the MapReduce implementation with your Spark
 implementation. The output should be the same.</p>
 
+<p>Clarification on terminology: informally, we often refer to
+"mappers" and "reducers" in the context of Spark. That's a shorthand
+way of saying map-like transformations
+(<code>map</code>, <code>flatMap</code>, <code>filter</code>, <code>mapPartitions</code>,
+etc.) and reduce-like transformations
+(e.g., <code>reduceByKey</code>, <code>groupByKey</code>, <code>aggregateByKey</code>,
+etc.). Hopefully it's clear from lecture that while Spark represents a
+generalization of MapReduce, the notions of per-record processing
+(i.e., map-like transformation) and grouping/shuffling (i.e.,
+reduce-like transformations) are shared across both frameworks.</p>
+
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>Please follow these instructions carefully!</p>
@@ -841,6 +852,14 @@ reduce task. In the above example we set the two equal.</p>
 correctness of your program. The setting of ten above is a reasonable
 middle ground between having your jobs finish in a reasonable amount
 of time and not monopolizing cluster resources.</p>
+
+<p>A related but still orthogonal concept is partitions. Partitions
+describes the physical division of records across workers during
+execution. When reading from HDFS, the number of HDFS blocks
+determines the number of partitions in your RDD. When you apply a
+reduce-like transformation, you can optionally specify the number of
+partitions (or Spark applies a default) &mdash; in this case, the
+number of partitions is equal to the number of reducers.</p>
 
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
