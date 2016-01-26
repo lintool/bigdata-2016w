@@ -1027,7 +1027,7 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment3.BooleanRetrievalCompressed \
    -index cs489-2016w-lintool-a3-index-wiki \
    -collection /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
-   -query "waterloo cheriton AND kitchner OR"
+   -query "waterloo stanford OR cheriton AND"
 
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    ca.uwaterloo.cs.bigdata2016w.lintool.assignment3.BooleanRetrievalCompressed \
@@ -1042,9 +1042,9 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
 index for the sample Wikipedia collection? Just so we're using the
 same units, report the output of <code>hadoop fs -du -h</code>.</p>
 
-<p><b>Question 3.</b> What are the Wikipedia articles (just
-the article titles) retrieved in response to the query <code>"waterloo
-cheriton AND kitchner OR"</code>?</p>
+<p><b>Question 3.</b> What are the Wikipedia articles (just the
+article titles) retrieved in response to the query <code>"waterloo
+stanford OR cheriton AND"</code>?</p>
 
 <p><b>Question 4.</b> What are the Wikipedia articles (just
 the article titles) retrieved in response to the query <code>"internet
