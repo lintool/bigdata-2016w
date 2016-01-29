@@ -32,7 +32,7 @@ def check_a3(username,reducers):
           "ca.uwaterloo.cs.bigdata2016w.{0}.assignment3.BooleanRetrievalCompressed".format(username),
           "-index", "cs489-2016w-{0}-a3-index-shakespeare".format(username), 
           "-collection","data/Shakespeare.txt",
-          "-query", "white read OR rose AND pluck AND"])
+          "-query", "white red OR rose AND pluck AND"])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="CS 489/689 W15 A3 Public Test Script for Linux")                                                         
