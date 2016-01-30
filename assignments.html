@@ -1238,9 +1238,8 @@ personalized PageRank:</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
-   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.ExtractTopPersonalizedPageRankNodes \
-   -input cs489-2016w-lintool-a4-Gnutella-PageRank/iter0020 -output cs489-2016w-lintool-a4-Gnutella-PageRank-top10 \
-   -top 10 -sources 367,249,145
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.RunPersonalizedPageRankBasic \
+   -base cs489-2016w-lintool-a4-Gnutella-PageRank -numNodes 6301 -start 0 -end 20 -sources 367,249,145
 </pre>
 
 <p>Note that the sources are passed in from the command-line
