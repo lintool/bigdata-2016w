@@ -1196,8 +1196,7 @@ the reference implementation of <code>RunPageRankBasic</code>. You
 must make your implementation work with respect to the command-line
 invocations specified below.</p>
 
-<p>First, we'll convert the adjacency list into PageRank node
-records:</p>
+<p>First, convert the adjacency list into PageRank node records:</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -1221,8 +1220,8 @@ source, second source, and third source. You can expect the array
 positions to correspond exactly to the position of the node id in the
 source string.</p>
 
-<p>Next, we'll partition the graph (hash partitioning) and get ready
-to iterate:</p>
+<p>Next, partition the graph (hash partitioning) and get ready to
+iterate:</p>
 
 <pre>
 $ hadoop fs -mkdir cs489-2016w-lintool-a4-Gnutella-PageRank
@@ -1233,8 +1232,8 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
    -output cs489-2016w-lintool-a4-Gnutella-PageRank/iter0000 -numPartitions 5 -numNodes 6301
 </pre>
 
-<p>After setting everything up, we'll iterate multi-source
-personalized PageRank:</p>
+<p>After setting everything up, iterate multi-source personalized
+PageRank:</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -1245,8 +1244,8 @@ $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
 <p>Note that the sources are passed in from the command-line
 again. Here, we're running twenty iterations.</p>
 
-<p>Finally, we'll run a program to extract the top ten personalized
-PageRank values, with respect to each source.</p>
+<p>Finally, run a program to extract the top ten personalized PageRank
+values, with respect to each source.</p>
 
 <pre>
 $ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
@@ -1309,7 +1308,7 @@ String.format("%.5f %d", pagerank, nodeid)
 <p>This will generate the final results in the same format as
 above. Also note: print actual probabilities, not log
 probabilities&mdash;although during the actual PageRank computation
-keeping values as log probabilities is better.</p>
+keep values as log probabilities.</p>
 
 <p>The final class <code>ExtractTopPersonalizedPageRankNodes</code>
 does not need to be a MapReduce job (but it does need to read from
@@ -1375,32 +1374,170 @@ the multiple-source personalized PageRank to work, at least completing
 the single-source implementation will allow us to give you partial
 credit.</p>
 
-<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+<h4 style="padding-top: 10px">Running on the Altiscale cluster</h4>
 
-<p>When grading, we will pull your repo and build your code:<p>
+<p>Once you get your implementation working and debugged in the Linux
+environment, you're going to run your code on a non-trivial graph: the
+link structure of (all of) Wikipedia. The adjacency lists are stored
+in <code>/shared/cs489/data/wiki-adj</code> on HDFS. The graph has
+16,117,779 vertices and 155,472,640 edges.</p>
+
+<p>First, convert the adjacency list into PageRank node records:</p>
 
 <pre>
-$ mvn clean package
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.BuildPersonalizedPageRankRecords \
+   -input /shared/cs489/data/wiki-adj -output cs489-2016w-lintool-a4-wiki-PageRankRecords \
+   -numNodes 16117779 -sources 73273,73276
 </pre>
 
-<p>Your code should build successfully. We will then run your code in
-exactly the manner above. To verify correctness, we will specify a few
-different source nodes of our choosing. The final
-program <code>ExtractTopPersonalizedPageRankNodes</code> should print
-to stdout a list of top 10 nodes with highest personalized PageRank
-values with respect to each source node (as above).</p>
+<p>Next, partition the graph (hash partitioning) and get ready to
+iterate:</p>
 
-<p>In <code>assignment4.md</code>, tell me if you were able to
-successfully complete the assignment. This is in case I can't get your
-code to run, I need to know if it is because you weren't able to
-complete the assignment successfully, or if it is due to some other
+<pre>
+$ hadoop fs -mkdir cs489-2016w-lintool-a4-wiki-PageRank
+
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.PartitionGraph \
+   -input cs489-2016w-lintool-a4-wiki-PageRankRecords \
+   -output cs489-2016w-lintool-a4-wiki-PageRank/iter0000 -numPartitions 10 -numNodes 16117779
+</pre>
+
+<p>After setting everything up, iterate multi-source
+personalized PageRank:</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.RunPersonalizedPageRankBasic \
+   -base cs489-2016w-lintool-a4-wiki-PageRank -numNodes 16117779 -start 0 -end 20 -sources 73273,73276
+</pre>
+
+<p>On the Altiscale cluster, each iteration shouldn't take more than a
+couple of minutes to complete. If it's taking more than five minutes
+per iteration, you're doing something wrong.</p>
+
+<p>Finally, run a program to extract the top ten personalized PageRank
+values, with respect to each source.</p>
+
+<pre>
+$ hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+   ca.uwaterloo.cs.bigdata2016w.lintool.assignment4.ExtractTopPersonalizedPageRankNodes \
+   -input cs489-2016w-lintool-a4-wiki-PageRank/iter0020 -output cs489-2016w-lintool-a4-wiki-PageRank-top10 \
+   -top 10 -sources 73273,73276
+</pre>
+
+<p>In the example above, we're running personalized PageRank with
+respect to two sources: 73273 and 73276. What articles do these ids
+correspond to? There's a file on HDFS
+at <code>/shared/cs489/data/wiki-titles.txt</code> that provides the
+answer. How do you know if your implementation is correct? You can
+sanity check your results by taking the ids and looking up the
+articles that they correspond to. Do the results make sense?</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>Similar to the previous assignments, you'll create a file
+called <code>bigdata2016w/assignment4.md</code> (more below).</li>
+
+<li>All the implementations described above should be in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment4</code>.</li>
+
+</ul>
+
+<p>Make sure your implementation runs in the Linux student CS
+environment on the Gnutella graph and on the Wikipedia graph on the
+Altiscale cluster.</p>
+
+<p>In <code>bigdata2016w/assignment4.md</code>, tell us if you were
+able to successfully complete the assignment. This is in case we can't
+get your code to run, we need to know if it is because you weren't able
+to complete the assignment successfully, or if it is due to some other
 issue. If you were not able to implement everything, describe how far
-you've gotten. Feel free to use this space to tell me additional
-things I should look for in your implementation.</p>
+you've gotten. Feel free to use this space to tell us additional
+things we should look for in your implementation.</p>
+
+<p>Also, in this file, copy the output of your implementation on the
+Altiscale cluster, i.e., personalized PageRank with respect to
+vertices 73273 and 73276. This will give us something to look at and
+check if we can't get your code to run successfully. Something that
+looks like this:</p>
+
+<pre>
+Source: 73273
+0.XXXXX XXX
+...
+
+Source: 73276
+0.XXXXX XXX
+...
+</pre>
+
+<p>When grading, we will clone your repo and use the below check
+scripts:</p>
+
+<ul>
+
+<li><a href="assignments/check_assignment4_public_linux.py"><code>check_assignment4_public_linux.py</code></a>
+in the Linux Student CS environment.</li>
+
+<li><a href="assignments/check_assignment4_public_altiscale.py"><code>check_assignment4_public_altiscale.py</code></a>
+on the Altiscale cluster.</li>
+
+</ul>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", I would
+recommend that you verify everything above works by performing a clean
+clone of your repo and run the public check scripts.</p>
+
+<p>That's it!</p>
 
 <h4 style="padding-top: 10px">Grading</h4>
 
-<p>TBA</p>
+<p>The entire assignment is worth 55 points:
+
+<ul>
+
+<li>A correct implementation of single-source personalized PageRank is
+worth 10 points.</li>
+
+<li>That we are able to run the single-source personalized PageRank
+implementation in the Linux Student CS environment is worth 5
+points.</li>
+
+<li>A correct implementation of multiple-source personalized PageRank
+is worth 15 points.</li>
+
+<li>That we are able to run the multiple-source personalized PageRank
+implementation in the Linux Student CS environment is worth 5
+points.</li>
+
+<li>Scaling the single-source personalized PageRank implementation on
+Altiscale is worth 10 points.</li>
+
+<li>Scaling the multiple-source personalized PageRank implementation
+on Altiscale is worth 10 points.</li>
+
+</ul>
+
+<p>In our private check scripts, we will specify arbitrary source
+nodes to verify the correctness of your implementation.</p>
+
+<p>Note that this grading scheme discretizes each component of the
+assignment. For example, if you implement everything and it works
+correctly on the Linux Student CS environment, but can't get it to
+scale on the Altiscale cluster to the larger graph, you'll receive 35
+out of 55 points. On the other hand, if you implement single-source
+personalized PageRank correctly and it runs in both the Linux Student
+CS environment and Altiscale, you will receive 25 out of 55
+points. And combinations thereof.</p>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
