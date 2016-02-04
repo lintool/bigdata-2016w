@@ -1316,8 +1316,8 @@ HDFS). Obviously, the other classes need to run MapReduce jobs.</p>
 
 <p>The reference implementation of PageRank in Bespin has many
 options: you can either use in-mapper combining or ordinary
-combiners. In your implementation, choose one or the other. You do not
-need to implement both options. Also, the reference implementation has
+combiners. In your implementation, use ordinary combiners.
+Also, the reference implementation has
 an option to either use range partitioning or hash partitioning: you
 only need to implement hash partitioning. You can start with the
 reference implementation and remove code that you don't need (see #2
