@@ -1548,6 +1548,215 @@ points. And combinations thereof.</p>
 <div>
 <h3>Assignment 5: Data Warehousing <small>due 8:30am March 1</small></h3>
 
+
+<p><b>Q1:</b> How many items were shipped on a particular date? This corresponds to the following SQL query:
+
+<pre>
+select count(*) from lineitem where l_shipdate = 'YYYY-MM-DD';
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q1 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to stdout. The
+value of the <code>--date</code> argument corresponds to
+the <code>l_shipdate</code> predicate in the where clause in the SQL
+query. You need to anticipate dates of the
+form <code>YYYY-MM-DD</code>, <code>YYYY-MM</code>, or
+just <code>YYYY</code>, and your query needs to give the correct
+answer depending on the date format. You can assume that a valid date
+(in one of the above formats) is provided, so you do not need to
+perform input validation.</p>
+
+<p><b>Q2:</b> Which clerks were responsible for processing items that
+were shipped on a particular date? This corresponds to the following
+SQL query:</p>
+
+<pre>
+select o_clerk from lineitem, orders
+where
+  l_orderkey = o_orderkey and
+  l_shipdate = 'YYYY-MM-DD';
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q2 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to
+stdout. Everything described in <b>Q1</b> about dates applies here as
+well.</p>
+
+<p>In the design of this data warehouse, the <code>lineitem</code>
+and <code>orders</code> tables are not likely to fit in
+memory. Therefore, the only scalable join approach is the reduce-side
+join. You must implement this join in Spark using
+the <code>cogroup</code> transformation.</p>
+
+<p><b>Q3:</b> What are the names of parts and suppliers of items
+shipped on a particular date? This corresponds to the following SQL
+query:</p>
+
+<pre>
+select p_name, s_name from lineitem, part, supplier
+where
+  l_partkey = p_partkey and
+  l_suppkey = s_suppkey and
+  l_shipdate = 'YYYY-MM-DD';
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q3 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to
+stdout. Everything described in <b>Q1</b> about dates applies here as
+well.</p>
+
+<p>In the design of this data warehouse, it is assumed that
+the <code>part</code> and <code>supplier</code> tables will fit in
+memory. Therefore, it is possible to implement a hash join. For this
+query, you must implement a hash join in Spark with broadcast
+variables.</p>
+
+<p><b>Q4:</b> How many items were shipped to each country on a
+particular date? This corresponds to the following SQL query:</p>
+
+<pre>
+select n_name, count(*) from lineitem, orders, customer, nation
+where
+  l_orderkey = o_orderkey and
+  o_custkey = c_custkey and
+  c_nationkey = n_nationkey and
+  l_shipdate = 'YYYY-MM-DD'
+group by n_nationkey;
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q4 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to
+stdout. Everything described in <b>Q1</b> about dates applies here as
+well.</p>
+
+<p>Implement this query with different join techniques as you see
+fit. You can assume that the <code>lineitem</code>
+and <code>orders</code> table will not fit in memory, but you can
+assume that the <code>customer</code> and <code>nation</code> tables
+will both fit in memory. For this query, the performance as well as
+the scalability of your implementation will contribute to the
+grade.</p>
+
+<p><b>Q5:</b> This query represents a very simple end-to-end ad hoc
+analysis task: Related to <b>Q4</b>, your boss has asked you to
+compare shipments to Canada vs. the United States by day, given all
+the data in the data warehouse. You think this request is best
+fulfilled by a line graph, with two lines (one representing the US and
+one representing Canada), where the <i>x</i>-axis is the date and
+the <i>y</i> axis is the volume. Generate this graph for your
+boss.</p>
+
+<p>First, write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q5 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/
+</pre>
+
+<p>the raw data necessary for the graph will be printed to stdout.</p>
+
+<p>Next, create this actual graph: use whatever tool you are
+comfortable with, e.g., Excel, gnuplot, etc.</p>
+
+<p><b>Q6:</b> This is a slightly modified version of TPC-H Q1 "Pricing
+Summary Report Query". This query reports the amount of business that
+was billed, shipped, and returned:</p>
+
+<pre>
+select
+  l_returnflag,
+  l_linestatus,
+  sum(l_quantity) as sum_qty,
+  sum(l_extendedprice) as sum_base_price,
+  sum(l_extendedprice*(1-l_discount)) as sum_disc_price,
+  sum(l_extendedprice*(1-l_discount)*(1+l_tax)) as sum_charge,
+  avg(l_quantity) as avg_qty,
+  avg(l_extendedprice) as avg_price,
+  avg(l_discount) as avg_disc,
+  count(*) as count_order
+from lineitem
+where
+  l_shipdate = 'YYYY-MM-DD'
+group by l_returnflag, l_linestatus;
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q6 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to
+stdout. Everything described in <b>Q1</b> about dates applies here as
+well.</p>
+
+<p><b>Q7:</b> This is a slightly modified version of TPC-H Q3
+"Shipping Priority Query".  This query retrieves the 10 unshipped
+orders with the highest value:</p>
+
+<pre>
+select
+  l_orderkey,
+  sum(l_extendedprice*(1-l_discount)) as revenue,
+  o_orderdate,
+  o_shippriority
+from customer, orders, lineitem
+where
+  c_custkey = o_custkey and
+  l_orderkey = o_orderkey and
+  o_orderdate < "YYYY-MM-DD" and
+  l_shipdate > "YYYY-MM-DD"
+group by
+  l_orderkey,
+  o_orderdate,
+  o_shippriority
+order by
+  revenue desc;
+</pre>
+
+<p>Write a program such that when we execute the following
+command:</p>
+
+<pre>
+spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q7 \
+   target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT/ --date '1996-01-01'
+</pre>
+
+<p>the answer to the above SQL query will be printed to stdout. Here
+you can assume that the date argument is only in the
+format <code>YYYY-MM-DD</code> and that it is a valid date.</p>
+
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
 </section>
