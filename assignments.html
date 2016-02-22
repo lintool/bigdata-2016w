@@ -1546,7 +1546,7 @@ points. And combinations thereof.</p>
 
 <section id="assignment5" style="padding-top:35px">
 <div>
-<h3>Assignment 5: Data Warehousing <small>due 8:30am March 1</small></h3>
+<h3>Assignment 5: Data Warehousing <small>due 8:30am March 3</small></h3>
 
 <p><b>Warning:</b> This assignment is not completely written yet. It
 is provided in draft form for those who wish to get a head start on
@@ -1588,18 +1588,18 @@ will help you make sense of the queries you are running.</p>
 
 <p>The TPC-H benchmark comes with a data generator, and we have
 generated some data for
-you <a href="assignments/TPC-H-0.1-TXT.tar.gz">here</a>. For the first
+you <a href="assignments/TPC-H-0.1-TXT.tar.gz">here</a>
+(<code>TPC-H-0.1-TXT.tar.gz</code>). For the first
 part of the assignment where you will be working with Spark locally,
-you will run your queries against this data.</p>
-
-<p>Download and unpack the data: you will see a number of text files,
+you will run your queries against this data.
+Download and unpack the data above: you will see a number of text files,
 each corresponding to a table in the TPC-H schema. The files are
 delimited by <code>|</code>. You'll notice that some of the fields,
 especially the text fields, are gibberish&mdash;that's normal, since
 the data are randomly generated.</p>
 
 <p>Implement the following seven SQL queries, running on
-the <code>TPC-H-0.1-TXT.tar.gz</code> data. Each SQL query is
+the <code>TPC-H-0.1-TXT</code> data. Each SQL query is
 accompanied by a written description of what the query does; if there
 are any ambiguities in the language, you can always assume that the
 SQL query is correct. Each of your query will be a separate Spark
@@ -1625,7 +1625,18 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q1 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout. The value of the
+<p>the answer to the above SQL query will be printed to stdout, in a line
+that matches the following regular expression:</p>
+
+<pre>
+ANSWER=\d+
+</pre>
+
+<p>The output of the query can contain logging and debug information,
+but there must be a line with the answer in <b>exactly</b> the above
+format.</p>
+
+<p>The value of the
 <code>--input</code> argument is the directory that contains the
 plain-text tables. The value of the <code>--date</code> argument
 corresponds to the <code>l_shipdate</code> predicate in the where
@@ -1637,14 +1648,15 @@ answer depending on the date format. You can assume that a valid date
 perform input validation.</p>
 
 <p><b>Q2:</b> Which clerks were responsible for processing items that
-were shipped on a particular date? This corresponds to the following
-SQL query:</p>
+were shipped on a particular date? List the first 20 by order
+key. This corresponds to the following SQL query:</p>
 
 <pre>
 select o_clerk, o_orderkey from lineitem, orders
 where
   l_orderkey = o_orderkey and
-  l_shipdate = 'YYYY-MM-DD';
+  l_shipdate = 'YYYY-MM-DD'
+order by o_orderkey asc limit 20;
 </pre>
 
 <p>Write a program such that when we execute the following
@@ -1655,9 +1667,18 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q2 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to
-stdout. Everything described in <b>Q1</b> about dates applies here as
-well.</p>
+<p>the answer to the above SQL query will be printed to stdout, as a
+sequence of tuples in the following format:</p>
+
+<pre>
+(o_clerk,o_orderkey)
+(o_clerk,o_orderkey)
+...
+</pre>
+
+<p>That is, each tuple is comma-delimited and surrounded by
+parentheses. Everything described in <b>Q1</b> about dates applies
+here as well.</p>
 
 <p>In the design of this data warehouse, the <code>lineitem</code>
 and <code>orders</code> tables are not likely to fit in
@@ -1666,15 +1687,16 @@ join. You must implement this join in Spark using
 the <code>cogroup</code> transformation.</p>
 
 <p><b>Q3:</b> What are the names of parts and suppliers of items
-shipped on a particular date? This corresponds to the following SQL
-query:</p>
+shipped on a particular date? List the first 20 by order key. This
+corresponds to the following SQL query:</p>
 
 <pre>
-select p_name, s_name from lineitem, part, supplier
+select l_orderkey, p_name, s_name from lineitem, part, supplier
 where
   l_partkey = p_partkey and
   l_suppkey = s_suppkey and
-  l_shipdate = 'YYYY-MM-DD';
+  l_shipdate = 'YYYY-MM-DD'
+order by l_orderkey asc limit 20;
 </pre>
 
 <p>Write a program such that when we execute the following
@@ -1685,9 +1707,18 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q3 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to
-stdout. Everything described in <b>Q1</b> about dates applies here as
-well.</p>
+<p>the answer to the above SQL query will be printed to stdout, as a
+sequence of tuples in the following format:</p>
+
+<pre>
+(l_orderkey,p_name,s_name)
+(l_orderkey,p_name,s_name)
+...
+</pre>
+
+<p>That is, each tuple is comma-delimited and surrounded by
+parentheses. Everything described in <b>Q1</b> about dates applies
+here as well.</p>
 
 <p>In the design of this data warehouse, it is assumed that
 the <code>part</code> and <code>supplier</code> tables will fit in
@@ -1699,13 +1730,14 @@ variables.</p>
 particular date? This corresponds to the following SQL query:</p>
 
 <pre>
-select n_name, count(*) from lineitem, orders, customer, nation
+select n_nationkey, n_name, count(*) from lineitem, orders, customer, nation
 where
   l_orderkey = o_orderkey and
   o_custkey = c_custkey and
   c_nationkey = n_nationkey and
   l_shipdate = 'YYYY-MM-DD'
-group by n_nationkey;
+group by n_nationkey, n_name
+order by n_nationkey asc;
 </pre>
 
 <p>Write a program such that when we execute the following
@@ -1716,9 +1748,11 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q4 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to
-stdout. Everything described in <b>Q1</b> about dates applies here as
-well.</p>
+<p>the answer to the above SQL query will be printed to stdout. Format
+the output in the same manner as with the above queries: one tuple per
+line, where each tuple is comma-delimited and surrounded by
+parentheses. Everything described in <b>Q1</b> about dates applies
+here as well.</p>
 
 <p>Implement this query with different join techniques as you see
 fit. You can assume that the <code>lineitem</code>
@@ -1745,7 +1779,10 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q5 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT
 </pre>
 
-<p>the raw data necessary for the graph will be printed to stdout.</p>
+<p>the raw data necessary for the graph will be printed to stdout.
+Format the output in the same manner as with the above queries: one
+tuple per line, where each tuple is comma-delimited and surrounded by
+parentheses.</p>
 
 <p>Next, create this actual graph: use whatever tool you are
 comfortable with, e.g., Excel, gnuplot, etc.</p>
@@ -1780,9 +1817,16 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q6 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to
-stdout. Everything described in <b>Q1</b> about dates applies here as
-well.</p>
+<p>the answer to the above SQL query will be printed to stdout. Format
+the output in the same manner as with the above queries: one tuple per
+line, where each tuple is comma-delimited and surrounded by
+parentheses. Everything described in <b>Q1</b> about dates applies
+here as well.</p>
+
+<p>Implement this query as efficiently as you can, using all of the
+optimizations we discussed in lecture. You will only get full points
+for this question if you exploit all the optimization opportunities
+that are available.</p>
 
 <p><b>Q7:</b> This is a slightly modified version of TPC-H Q3
 "Shipping Priority Query".  This query retrieves the 10 unshipped
@@ -1805,7 +1849,8 @@ group by
   o_orderdate,
   o_shippriority
 order by
-  revenue desc;
+  revenue desc
+limit 10;
 </pre>
 
 <p>Write a program such that when we execute the following
@@ -1816,9 +1861,17 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q7 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout. Here
-you can assume that the date argument is only in the
+<p>the answer to the above SQL query will be printed to stdout.
+Format the output in the same manner as with the above queries: one
+tuple per line, where each tuple is comma-delimited and surrounded by
+parentheses. Here you can assume that the date argument is only in the
 format <code>YYYY-MM-DD</code> and that it is a valid date.</p>
+
+<p>Implement this query as efficiently as you can, using all of the
+optimizations we discussed in lecture. Plan you joins as you see fit,
+keeping in mind above assumptions on what will and will not fit in
+memory. You will only get full points for this question if you exploit
+all the optimization opportunities that are available.</p>
 
 <h4 style="padding-top: 10px">Scaling up on Altiscale</h4>
 
@@ -1841,7 +1894,7 @@ format <code>YYYY-MM-DD</code> and that it is a valid date.</p>
 
 <section id="assignment6" style="padding-top:35px">
 <div>
-<h3>Assignment 6: Duplicate Sentence Detection <small>due 8:30am March 15</small></h3>
+<h3>Assignment 6: Duplicate Sentence Detection <small>due 8:30am March 17</small></h3>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
@@ -1850,7 +1903,7 @@ format <code>YYYY-MM-DD</code> and that it is a valid date.</p>
 
 <section id="assignment7" style="padding-top:35px">
 <div>
-<h3>Assignment 7: Inverted Indexing (Redux) <small>due 8:30am March 22</small></h3>
+<h3>Assignment 7: Inverted Indexing (Redux) <small>due 8:30am March 24</small></h3>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
