@@ -863,7 +863,7 @@ number of partitions is equal to the number of reducers.</p>
 
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
-interface. Before you consider the assignment "complete", I would
+interface. Before you consider the assignment "complete", we would
 recommend that you verify everything above works by performing a clean
 clone of your repo and going through the steps above.</p>
 
@@ -1085,7 +1085,7 @@ in the Linux Student CS environment.</li>
 
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
-interface. Before you consider the assignment "complete", I would
+interface. Before you consider the assignment "complete", we would
 recommend that you verify everything above works by performing a clean
 clone of your repo and run the public check scripts.</p>
 
@@ -1341,7 +1341,7 @@ program, but might differ a bit due to convergence issues. After 20
 iterations, the output of the MapReduce implementation should match to
 at least the fourth decimal place.</p>
 
-<p>This is complex assignment. I would suggest breaking the
+<p>This is complex assignment. We would suggest breaking the
 implementation into the following steps:</p>
 
 <ol>
@@ -1493,7 +1493,7 @@ on the Altiscale cluster.</li>
 
 <p>When you've done everything, commit to your repo and remember to
 push back to origin. You should be able to see your edits in the web
-interface. Before you consider the assignment "complete", I would
+interface. Before you consider the assignment "complete", we would
 recommend that you verify everything above works by performing a clean
 clone of your repo and run the public check scripts.</p>
 
@@ -1547,13 +1547,6 @@ points. And combinations thereof.</p>
 <section id="assignment5" style="padding-top:35px">
 <div>
 <h3>Assignment 5: Data Warehousing <small>due 8:30am March 3</small></h3>
-
-<p><b>Warning:</b> This assignment is not completely written yet. It
-is provided in draft form for those who wish to get a head start on
-the assignment. The assignment will not be considered "complete" until
-this message is removed. If you start working on the problems, it is
-your responsibility to make sure that your solutions actually match
-the final questions.</p>
 
 <p>In this assignment you'll be hand-crafting Spark programs that
 implement SQL queries in a data warehousing scenario. Various
@@ -1625,8 +1618,9 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q1 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout, in a line
-that matches the following regular expression:</p>
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed), in a line that matches
+the following regular expression:</p>
 
 <pre>
 ANSWER=\d+
@@ -1667,8 +1661,9 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q2 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout, as a
-sequence of tuples in the following format:</p>
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed), as a sequence of tuples
+in the following format:</p>
 
 <pre>
 (o_clerk,o_orderkey)
@@ -1707,8 +1702,9 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q3 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout, as a
-sequence of tuples in the following format:</p>
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed), as a sequence of tuples
+in the following format:</p>
 
 <pre>
 (l_orderkey,p_name,s_name)
@@ -1748,7 +1744,8 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q4 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout. Format
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed). Format
 the output in the same manner as with the above queries: one tuple per
 line, where each tuple is comma-delimited and surrounded by
 parentheses. Everything described in <b>Q1</b> about dates applies
@@ -1779,7 +1776,8 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q5 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT
 </pre>
 
-<p>the raw data necessary for the graph will be printed to stdout.
+<p>the raw data necessary for the graph will be printed to stdout (on the
+console where the above command is executed).
 Format the output in the same manner as with the above queries: one
 tuple per line, where each tuple is comma-delimited and surrounded by
 parentheses.</p>
@@ -1817,7 +1815,8 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q6 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout. Format
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed). Format
 the output in the same manner as with the above queries: one tuple per
 line, where each tuple is comma-delimited and surrounded by
 parentheses. Everything described in <b>Q1</b> about dates applies
@@ -1861,7 +1860,8 @@ spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q7 \
    target/bigdata2016w-0.1.0-SNAPSHOT.jar --input TPC-H-0.1-TXT --date '1996-01-01'
 </pre>
 
-<p>the answer to the above SQL query will be printed to stdout.
+<p>the answer to the above SQL query will be printed to stdout (on the
+console where the above command is executed).
 Format the output in the same manner as with the above queries: one
 tuple per line, where each tuple is comma-delimited and surrounded by
 parentheses. Here you can assume that the date argument is only in the
@@ -1875,17 +1875,97 @@ all the optimization opportunities that are available.</p>
 
 <h4 style="padding-top: 10px">Scaling up on Altiscale</h4>
 
-<p>TBA</p>
+<p>Once you get your implementation working and debugged in the Linux
+environment, run your code on a larger TCP-H dataset, located on HDFS
+at <code>/shared/cs489/data/TPC-H-10-TXT</code>. Make sure that all
+seven queries above run correctly on this larger dataset.</p>
+
+<p>On the Altiscale cluster, we will run your code with the following
+command-line parameters (same for Q1-Q7):</p>
+
+<pre>
+my-spark-submit --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment5.Q1 --num-executors 10 --driver-memory 2g --executor-memory 2G \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/TPC-H-10-TXT --date '1996-01-01'
+</pre>
+
+<p>In this configuration, your programs shouldn't take more than a
+couple of minutes. If it's taking more than five minutes, you're
+probably doing something wrong.</p>
+
+<p><b>Important:</b> In your <code>my-spark-submit</code> script, make
+sure you set <code>--deploy-mode client</code>. This will force the
+driver to run on the client (i.e., workspace), so that you will see
+the output of <code>println</code>. Otherwise, the driver will run on
+an arbitrary cluster node, making stdout not directly visible.</p>
 
 <h4 style="padding-top: 10px">Turning in the Assignment</h4>
 
 <p>Please follow these instructions carefully!</p>
 
-<p>TBA</p>
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>Optional: put anything that you want to convey to us about your
+implementation in <code>bigdata2016w/assignment5.md</code>.</li>
+
+<li>Your implementations for the queries should be in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment5</code>. There
+should be at the minimum seven classes (Q1-Q7), but you may include
+helper classes as you see fit.</li>
+
+</ul>
+
+<p>Make sure your implementation runs in the Linux student CS
+environment on <code>TPC-H-0.1-TXT</code>, and on the Alitscale
+cluster on the <code>TPC-H-10-TXT</code> data.</p>
+
+<p>Specifically, we will clone your repo and use the below check
+scripts:</p>
+
+<ul>
+
+<li><a href=""><code>check_assignment5_public_linux.py</code></a>
+in the Linux Student CS environment.</li>
+
+<li><a href=""><code>check_assignment5_public_altiscale.py</code></a>
+on the Altiscale cluster.</li>
+
+</ul>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", we would
+recommend that you verify everything above works by performing a clean
+clone of your repo and run the public check scripts.</p>
+
+<p>That's it!</p>
 
 <h4 style="padding-top: 10px">Grading</h4>
 
-<p>TBA</p>
+<p>The entire assignment is worth 100 points:</p>
+
+<ul>
+
+  <li>Getting your code to compile is worth 8 points (by now, these
+  should be "free" points)</li>
+
+  <li>For Q1-Q5, each query is worth 12 points: 6 points for a correct
+  implementation that works in the Linux Student CS environment, 6
+  points for a correct implementation that works on the Altiscale
+  cluster.</li>
+
+  <li>Q6 and Q7 are each worth 16 points: 8 points for a correct
+  implementation that works in the Linux Student CS environment, 8
+  points for a correct implementation that works on the Altiscale
+  cluster.</li>
+
+</ul>
+
+<p>A working implementation means that your code gives the right
+output according to our private check scripts, which will
+contain <code>--date</code> parameters that are unknown to you (but
+will nevertheless conform to our specifications above).</p>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
