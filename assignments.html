@@ -1559,7 +1559,9 @@ and the underlying execution framework (Spark). In more detail, you'll
 be given a series of SQL queries, and for each you'll have to
 hand-craft a Spark program that corresponds to each query.</p>
 
-<p><b>Important:</b> You are not allowed to use <code>join</code> and
+<p><b>Important:</b> You are not allowed to use the Dataframe API or
+Spark SQL to complete this assignment. You must write code to manipulate raw RDDs.
+Furthermore, you are not allowed to use <code>join</code> and
 closely-related transformations in Spark for this assignment, because
 otherwise it defeats the point of the exercise. The assignment will
 guide you toward what we are looking for, but if you have any
@@ -1765,8 +1767,8 @@ compare shipments to Canada vs. the United States by month, given all
 the data in the data warehouse. You think this request is best
 fulfilled by a line graph, with two lines (one representing the US and
 one representing Canada), where the <i>x</i>-axis is the year/month and
-the <i>y</i> axis is the volume. Generate this graph for your
-boss.</p>
+the <i>y</i> axis is the volume, i.e., <code>count(*)</code>.
+Generate this graph for your boss.</p>
 
 <p>First, write a program such that when we execute the following
 command:</p>
