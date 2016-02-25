@@ -1835,6 +1835,7 @@ orders with the highest value:</p>
 
 <pre>
 select
+  c_name,
   l_orderkey,
   sum(l_extendedprice*(1-l_discount)) as revenue,
   o_orderdate,
@@ -1846,6 +1847,7 @@ where
   o_orderdate < "YYYY-MM-DD" and
   l_shipdate > "YYYY-MM-DD"
 group by
+  c_name,
   l_orderkey,
   o_orderdate,
   o_shippriority
