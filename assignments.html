@@ -1992,7 +1992,318 @@ will nevertheless conform to our specifications above).</p>
 
 <section id="assignment6" style="padding-top:35px">
 <div>
-<h3>Assignment 6: Duplicate Sentence Detection <small>due 8:30am March 17</small></h3>
+<h3>Assignment 6: Spam Classification <small>due 8:30am March 17</small></h3>
+
+<p><b>Warning:</b> This assignment is not completely written yet. It
+is provided in draft form for those who wish to get a head start on
+the assignment. The assignment will not be considered "complete" until
+this message is removed. If you start working on the problems, it is
+your responsibility to make sure that your solutions actually match
+the final questions.</p>
+
+<p>In this assignment, you will build a spam classifier trained using
+stochastic gradient descent in Spark, replicating the work described
+in <a href="http://arxiv.org/abs/1004.5168">Efficient and Effective
+Spam Filtering and Re-ranking for Large Web Datasets</a> by Cormack,
+Smucker, and Clarke. We will draw your attention to specific sections
+of the paper that are directly pertinent to the assignment, but you
+should read the entire paper for background.</p>
+
+<h4 style="padding-top: 10px">Downloading Data</h4>
+
+<p>First let's grab the training and test data:</p>
+
+<pre>
+wget https://www.student.cs.uwaterloo.ca/~cs489/spam/spam.train.group_x.txt.bz2
+wget https://www.student.cs.uwaterloo.ca/~cs489/spam/spam.train.group_y.txt.bz2
+wget https://www.student.cs.uwaterloo.ca/~cs489/spam/spam.train.britney.txt.bz2
+wget https://www.student.cs.uwaterloo.ca/~cs489/spam/spam.test.qrels.txt.bz2
+</pre>
+
+<!--p>Just to verify what you've downloaded:</p>
+
+<div style="width: 50%">
+<table class="table table-striped">
+<thead><tr><td><b>File</b></td><td><b>MD5</b></td><td><b>Size</b></td></tr></thead>
+<tr><td><code>spam.train.group_x.txt.bz2</code></td><td><code>947faf932afee7e35d79e7da10fe0e3e</code></td><td>5.5 MB</td></tr>
+<tr><td><code>spam.train.group_y.txt.bz2</code></td><td><code>7cf45c3666915999f1048aafeff4c60e</code></td><td>6.6 MB</td></tr>
+<tr><td><code>spam.train.britney.txt.bz2</code></td><td><code>bad2e4ccaed7482f9e99e65e58c6beda</code></td><td>248 MB</td></tr>
+<tr><td><code>spam.test.qrels.txt.bz2</code></td><td><code>99858d9dd1b40e994732a641703859ec</code></td><td>303 MB</td></tr>
+</table>
+</div-->
+
+<p>The sizes of the above files are 5.5 MB, 6.6 MB, 248 MB, and 303
+MB, respectively. After you've downloaded the data, unpack:</p>
+
+<pre>
+bunzip2 spam.train.group_x.txt.bz2
+bunzip2 spam.train.group_y.txt.bz2
+bunzip2 spam.train.britney.txt.bz2
+bunzip2 spam.test.qrels.txt.bz2
+</pre>
+
+<p>Verify the unpacked data:</p>
+
+<div style="width: 50%">
+<table class="table table-striped">
+<thead><tr><td><b>File</b></td><td><b>MD5</b></td><td><b>Size</b></td></tr></thead>
+<tr><td><code>spam.train.group_x.txt</code></td><td><code>d6897ed8319c71604b1278b660a479b6</code></td><td>25 MB</td></tr>
+<tr><td><code>spam.train.group_y.txt</code></td><td><code>4d103821fdf369be526347b503655da5</code></td><td>20 MB</td></tr>
+<tr><td><code>spam.train.britney.txt</code></td><td><code>b52d54caa20325413491591f034b5e7b</code></td><td>766 MB</td></tr>
+<tr><td><code>spam.test.qrels.txt</code></td>   <td><code>df1d26476ec41fec625bc2eb9969875c</code></td><td>1.1 GB</td></tr>
+</table>
+</div>
+
+<p>Next, download the two files you'll need for evaluating the output of
+the spam classifier (links below):</p>
+
+<ul>
+
+<li><a href="assignments/compute_spam_metrics.c"><code>compute_spam_metrics.c</code></a></li>
+
+<li><a href="assignments/spam_eval.sh"><code>spam_eval.sh</code></a></li>
+
+</ul>
+
+<p>Compile the C program:</p>
+
+<pre>
+gcc -O2 -o compute_spam_metrics compute_spam_metrics.c -lm
+</pre>
+
+<p>You might get some warnings but don't worry&mdash;the code should
+compile fine. The actual evaluation script <code>spam_eval.sh</code>
+calls <code>compute_spam_metrics</code>, so make sure they're in the
+same directory.</p>
+
+<h4 style="padding-top: 10px">Basic Spam Classifier</h4>
+
+<p>In this assignment, we'll take you through building spam
+classifiers of increasing complexity, but let's start with a basic
+implementation using stochastic gradient descent. Build the spam
+classifier in <b>exactly</b> the way we describe below, because later
+parts of the assignment will depend on the setup.</p>
+
+<p>First, let's write the classifier trainer. The classifier trainer
+takes all the training instances, runs stochastic gradient descent,
+and produces a model as output.</p>
+
+<p>Look at the Cormack, Smucker, and Clarke paper (henceforth, CSC):
+the entire algorithm is literally 34 lines of C, shown in Figure 2 on
+page 10. The stochastic gradient descent update equations are in
+equations (11) and (12) on page 11. We actually made things <i>even
+simpler</i> for you: the features used in the CSC spam classifier are
+hashed byte 4-grams (thus, integers)&mdash;we've pre-computed the
+features for you.</p>
+
+<p>Take a look at <code>spam.train.group_x.txt</code>. The first line
+begins as follows:</p>
+
+<pre>
+clueweb09-en0094-20-13546 spam 387908 697162 426572 161118 688171 ...
+</pre>
+
+<p>In the file, each training instance is on a line. Each line begins
+with a document id, the string "spam" or "ham" (the ground truth
+label), and a list of integers (the features).</p>
+
+<p>Therefore, your spam classifier will look something like this:</p>
+
+<pre>
+// w is the weight vector (make sure the variable is within scope)
+val w = Map[Int, Double]()
+
+// Scores a document based on its list of features.
+def spamminess(features: Array[Int]) : Double = {
+  var score = 0d
+  features.foreach(f => if (w.contains(f)) score += w(f))
+  score
+}
+
+// This is the main learner:
+val delta = 0.002
+
+// For each instance...
+val isSpam = ...   // ground truth label
+val features = ... // feature vector of the training instance
+
+// Update the weights as follows:
+val score = spamminess(features)
+val prob = 1.0 / (1 + exp(-score))
+features.foreach(f => {
+  if (w.contains(f)) {
+    w(f) += (isSpam - prob) * delta
+  } else {
+    w(f) = (isSpam - prob) * delta
+   }
+})
+</pre>
+
+<p>We've given you the code fragment for the learner above as a
+starting point&mdash;it's your job to understand exactly how it works
+and turn it into a complete classifier trainer in Spark.</p>
+
+<p>For the structure of the Spark trainer program, take a look at
+slide 14 in the <a href="slides/week08b.pdf">Week 8, part 2</a>
+deck. We're going to build the configuration shown there (even though
+the slide says MapReduce, we're implementing it in
+Spark). Specifically, we're going run a single reducer to make sure we
+pump all the training instances through a single learner on the
+reducer end. The overall structure of your program is going to look
+something like this:</p>
+
+<pre>
+val textFile = sc.textFile("/path/to/training/data")
+
+val trained = textFile.map(line =>{
+  // Parse input
+  // ..
+  (0, (docid, isSpam, features))
+  }).groupByKey(1)
+  // Then run the trainer...
+
+trained.saveAsTextFile(...)
+</pre>
+
+<p>Note the mappers are basically just parsing the feature vectors and
+pushing them over to the reducer side for additional processing. We
+emit "0" as a "dummy key" to make sure all the training instances get
+collected at the reducer end via <code>groupByKey()</code>... after
+which you run the trainer (which applies the SGD updates, per
+above). Of course, it's your job to figure out how to connect the
+pieces together. This is the crux of the assignment.</p>
+
+<p>Putting everything together, you will write a trainer program
+called <code>TrainSpamClassifier</code> that we will execute in the
+following manner:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.TrainSpamClassifier \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.train.group_x.txt --model cs489-2016w-lintool-a6-model-group_x
+</pre>
+
+<p>The <code>--input</code> option specifies the input training
+instances (from above); the <code>--model</code> specifies the output
+directory where the model goes. Inside the model
+directory <code>cs489-2016w-lintool-a6-model-group_x</code>, there
+should be a single file, <code>part-00000</code>, that contains the
+trained model. The trained model should be a sequence of tuples, one
+on each line; each tuple should contain a feature and its weight (a
+double value). Something like:</p>
+
+<pre>
+$ head -5 cs489-2016w-lintool-a6-model-group_x/part-00000
+(547993,2.019484093190069E-4)
+(577107,5.255371091500805E-5)
+(12572,-4.40967560913553E-4)
+(270898,-0.001340150007664197)
+(946531,2.560528666942676E-4)
+</pre>
+
+<p>Next, you will write another Spark program
+named <code>ApplySpamClassifer</code> that will apply the trained spam
+classifier to the test instances. That is, the program will read in
+each input instance, compute the spamminess score (from above), and
+make a prediction: if the spamminess score is above 0, classify the
+document as spam; otherwise, classify the document as ham.</p>
+
+<p>We will run the program in the following manner:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
+ --output cs489-2016w-lintool-a6-test-group_x --model cs489-2016w-lintool-a6-model-group_x
+</pre>
+
+<p>The <code>--input</code> option specifies the input test instances;
+the <code>--model</code> specifies the classifier model; and
+the <code>--output</code> specifies the output directory.  The test
+data is organized in exactly the same way as the training data.  The
+output of <code>ApplySpamClassifer</code> should be organized as
+follows:</p>
+
+<pre>
+$ cat cs489-2016w-lintool-a6-test-group_x/* | sort | head -5
+(clueweb09-en0000-00-00142,spam,2.601624279252943,spam)
+(clueweb09-en0000-00-01005,ham,2.5654162439491004,spam)
+(clueweb09-en0000-00-01382,ham,2.5893946346394188,spam)
+(clueweb09-en0000-00-01383,ham,2.6190102258752614,spam)
+(clueweb09-en0000-00-03449,ham,1.500142758578532,spam)
+</pre>
+
+<p>The first field in each tuple is the document id and the second
+field is the ground truth judgment. These are just copied from the
+test data. The third field is the spamminess score, and the fourth
+field is the classifier's prediction.</p>
+
+<p><b>Important:</b> It is absolutely critical that your
+classifier <b>does not</b> use the ground truth label in making its
+predictions. The only reason the ground truth label is included in the
+output is to facilitate evaluation (see below).</p>
+
+<p>Finally, you can evaluate your results:</p>
+
+<pre>
+$ ./spam_eval.sh cs489-2016w-lintool-a6-test-group_x
+lam%:    25.15
+1-ROCA%: 17.25
+</pre>
+
+<p>Let's focus on the second metric, which is the area under the
+receiver operating characteristic (ROC) curve. This is a common way to
+characterize classifier error. The lower this score, the better.</p>
+
+<p>If you've done everything correctly up until now, you should be
+able to replicate the above results.</p>
+
+<p>You should then be able to train on the <code>group_y</code> training set:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.TrainSpamClassifier \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.train.group_y.txt --model cs489-2016w-lintool-a6-model-group_y
+</pre>
+
+<p>And make predictions:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
+ --output cs489-2016w-lintool-a6-test-group_y --model cs489-2016w-lintool-a6-model-group_y
+</pre>
+
+<p>And evaluate:</p>
+
+<pre>
+$ ./spam_eval.sh cs489-2016w-lintool-a6-test-group_y
+lam%:    18.53
+1-ROCA%: 12.82
+</pre>
+
+<p>Finally, train on the <code>britney</code> training set:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.TrainSpamClassifier \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.train.britney.txt --model cs489-2016w-lintool-a6-model-britney
+</pre>
+
+<p>And make predictions:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
+ --output cs489-2016w-lintool-a6-test-britney --model cs489-2016w-lintool-a6-model-britney
+</pre>
+
+<p>And evaluate:</p>
+
+<pre>
+$ ./spam_eval.sh cs489-2016w-lintool-a6-test-britney
+lam%:    23.83
+1-ROCA%: 16.46
+</pre>
+
+
+
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
