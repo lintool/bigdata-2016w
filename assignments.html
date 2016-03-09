@@ -2088,11 +2088,11 @@ parts of the assignment will depend on the setup.</p>
 takes all the training instances, runs stochastic gradient descent,
 and produces a model as output.</p>
 
-<p>Look at the Cormack, Smucker, and Clarke paper (henceforth, CSC):
+<p>Look at the Cormack, Smucker, and Clarke paper:
 the entire algorithm is literally 34 lines of C, shown in Figure 2 on
 page 10. The stochastic gradient descent update equations are in
 equations (11) and (12) on page 11. We actually made things <i>even
-simpler</i> for you: the features used in the CSC spam classifier are
+simpler</i> for you: the features used in the spam classifier are
 hashed byte 4-grams (thus, integers)&mdash;we've pre-computed the
 features for you.</p>
 
@@ -2104,8 +2104,8 @@ clueweb09-en0094-20-13546 spam 387908 697162 426572 161118 688171 ...
 </pre>
 
 <p>In the file, each training instance is on a line. Each line begins
-with a document id, the string "spam" or "ham" (the ground truth
-label), and a list of integers (the features).</p>
+with a document id, the string "spam" or "ham" (the label), and a list
+of integers (the features).</p>
 
 <p>Therefore, your spam classifier will look something like this:</p>
 
@@ -2124,7 +2124,7 @@ def spamminess(features: Array[Int]) : Double = {
 val delta = 0.002
 
 // For each instance...
-val isSpam = ...   // ground truth label
+val isSpam = ...   // label
 val features = ... // feature vector of the training instance
 
 // Update the weights as follows:
@@ -2183,8 +2183,8 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 </pre>
 
 <p>The <code>--input</code> option specifies the input training
-instances (from above); the <code>--model</code> specifies the output
-directory where the model goes. Inside the model
+instances (from above); the <code>--model</code> option specifies the
+output directory where the model goes. Inside the model
 directory <code>cs489-2016w-lintool-a6-model-group_x</code>, there
 should be a single file, <code>part-00000</code>, that contains the
 trained model. The trained model should be a sequence of tuples, one
@@ -2216,10 +2216,10 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 </pre>
 
 <p>The <code>--input</code> option specifies the input test instances;
-the <code>--model</code> specifies the classifier model; and
-the <code>--output</code> specifies the output directory.  The test
-data is organized in exactly the same way as the training data.  The
-output of <code>ApplySpamClassifer</code> should be organized as
+the <code>--model</code> option specifies the classifier model; and
+the <code>--output</code> option specifies the output directory.  The
+test data is organized in exactly the same way as the training data.
+The output of <code>ApplySpamClassifer</code> should be organized as
 follows:</p>
 
 <pre>
@@ -2232,12 +2232,12 @@ $ cat cs489-2016w-lintool-a6-test-group_x/* | sort | head -5
 </pre>
 
 <p>The first field in each tuple is the document id and the second
-field is the ground truth judgment. These are just copied from the
+field is the test label. These are just copied from the
 test data. The third field is the spamminess score, and the fourth
 field is the classifier's prediction.</p>
 
 <p><b>Important:</b> It is absolutely critical that your
-classifier <b>does not</b> use the ground truth label in making its
+classifier <b>does not</b> use the label in the test data when making its
 predictions. The only reason the ground truth label is included in the
 output is to facilitate evaluation (see below).</p>
 
@@ -2245,11 +2245,10 @@ output is to facilitate evaluation (see below).</p>
 
 <pre>
 $ ./spam_eval.sh cs489-2016w-lintool-a6-test-group_x
-lam%:    25.15
 1-ROCA%: 17.25
 </pre>
 
-<p>Let's focus on the second metric, which is the area under the
+<p>The eval script prints the evaluation metric, which is the area under the
 receiver operating characteristic (ROC) curve. This is a common way to
 characterize classifier error. The lower this score, the better.</p>
 
@@ -2275,7 +2274,6 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 
 <pre>
 $ ./spam_eval.sh cs489-2016w-lintool-a6-test-group_y
-lam%:    18.53
 1-ROCA%: 12.82
 </pre>
 
@@ -2298,10 +2296,108 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 
 <pre>
 $ ./spam_eval.sh cs489-2016w-lintool-a6-test-britney
-lam%:    23.83
 1-ROCA%: 16.46
 </pre>
 
+<h4 style="padding-top: 10px">Ensemble Spam Classifier</h4>
+
+<p>Next, let's build an ensemble classifier. Start by gathering all
+the models from each of the individual classifiers into a common
+directory:</p>
+
+<pre>
+mkdir cs489-2016w-lintool-a6-model-fusion
+cp cs489-2016w-lintool-a6-model-group_x/part-00000 cs489-2016w-lintool-a6-model-fusion/part-00000
+cp cs489-2016w-lintool-a6-model-group_y/part-00000 cs489-2016w-lintool-a6-model-fusion/part-00001
+cp cs489-2016w-lintool-a6-model-britney/part-00000 cs489-2016w-lintool-a6-model-fusion/part-00002
+</pre>
+
+<p>With these three separate classifiers, implement two different
+ensemble techniques:</p>
+
+<ul>
+  <li>Score averaging: Average the spamminess score from each
+  individual classifier. If the average score is above 0, classify the
+  document as spam; otherwise, classify the document as ham.</li>
+
+  <li>Voting: Each classifier gets a vote on spam/ham. Majority
+  wins.</li>
+
+</ul>
+
+<p>Write a program <code>ApplyEnsembleSpamClassifer</code> that we
+will execute in the following manner:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplyEnsembleSpamClassifer \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
+ --output cs489-2016w-lintool-a6-test-fusion-average --model cs489-2016w-lintool-a6-model-fusion --method average
+</pre>
+
+<p>The <code>--input</code> option specifies the input test instances.
+The <code>--model</code> option specifies the base directory of all
+the classifier models; in this directory your program should expect
+each individual model in a <code>part-XXXXX</code> file; it's okay to
+hard code the part files for convenience. The <code>--output</code>
+option specifies the output directory. Finally,
+the <code>--method</code> option specifies the ensemble technique,
+either "average" or "vote" per above.</p>
+
+<p>Your prediction program needs to load all three models, apply the
+specified ensemble techniques, and make predictions. The output format
+of the predictions should be the same as the output of
+the <code>ApplySpamClassifer</code> program. You should be able to
+evaluate with <code>spam_eval.sh</code> in the same way.</p>
+
+<p>Hint: Spark broadcast variables are helpful.</p>
+
+<p><b>Question 1:</b> What is the 1-ROCA% of the score averaging
+technique in the 3-classifier ensemble?</p>
+
+<p><b>Question 2:</b> What is the 1-ROCA% of the voting technique in
+the 3-classifier ensemble?</p>
+
+<p>Note that ensemble techniques can sometimes improve on the best
+classifier; sometimes not.</p>
+
+<h4 style="padding-top: 10px">The Effects of Data Shuffling</h4>
+
+<p>In class, we talked about how a model trained using stochastic
+gradient descent is dependent on the order in which the training
+instances are presented to the trainer. Let's explore this effect.</p>
+
+<p>Modify the <code>TrainSpamClassifier</code> to implement a new
+option <code>--shuffle</code>. With this option, the program will
+randomly shuffle the training instances before running the
+trainer:</p>
+
+<pre>
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.TrainSpamClassifier \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.train.britney.txt --model cs489-2016w-lintool-a6-model-britney-shuffle --shuffle
+</pre>
+
+<p>You <i>must</i> shuffle the data using Spark. The way to accomplish
+this in Spark is to generate a random number for each instance and
+then sort the instances by the value. That is, you <i>cannot</i>
+simply read all the training instances into memory in the driver,
+shuffle, and then parallelize.</p>
+
+<p>Obviously, the addition of the <code>--shuffle</code> option should
+not break existing functionality; that is, without the option, the
+program should behave exactly as before.</p>
+
+<p>Note that in this case we're working with the <code>britney</code>
+data because the two other datasets have very few
+examples&mdash;random shuffles can lead to weird idiosyncratic
+effects.</p>
+
+<p>You should be able to evaluate the newly trained model in exactly
+the same way as above. If you are getting a wildly different 1-ROCA%
+metric each time, you're doing something wrong.</p>
+
+<p><b>Question 3:</b> Run the trainer 10 times and evaluate the
+classifier on the test data each time. Report the 1-ROCA% metric in
+each of the ten trials and compute the overall average.</p>
 
 
 
