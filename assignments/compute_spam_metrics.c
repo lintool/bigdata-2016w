@@ -136,7 +136,7 @@ main(){
    }
    lamsq = sqrt(lamsq/(SIZE-1));
    //printf("lam%% %8.2lf (%0.2lf - %0.2lf)\n",100*unlogit(lm),100*unlogit(lm-1.96*lamsq),100*unlogit(lm+1.96*lamsq));
-   printf("lam%%: %8.2lf\n",100*unlogit(lm));
+   //printf("lam%%: %8.2lf\n",100*unlogit(lm));
 
    meanx /= SIZE;
    for (k=0;k<SIZE;k++) varx += (x[k]-meanx)*(x[k]-meanx);
