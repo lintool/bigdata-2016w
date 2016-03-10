@@ -2210,7 +2210,7 @@ $ head -5 cs489-2016w-lintool-a6-model-group_x/part-00000
 </pre>
 
 <p>Next, you will write another Spark program
-named <code>ApplySpamClassifer</code> that will apply the trained spam
+named <code>ApplySpamClassifier</code> that will apply the trained spam
 classifier to the test instances. That is, the program will read in
 each input instance, compute the spamminess score (from above), and
 make a prediction: if the spamminess score is above 0, classify the
@@ -2219,7 +2219,7 @@ document as spam; otherwise, classify the document as ham.</p>
 <p>We will run the program in the following manner:</p>
 
 <pre>
-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifier \
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
  --output cs489-2016w-lintool-a6-test-group_x --model cs489-2016w-lintool-a6-model-group_x
 </pre>
@@ -2228,7 +2228,7 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 the <code>--model</code> option specifies the classifier model; and
 the <code>--output</code> option specifies the output directory.  The
 test data is organized in exactly the same way as the training data.
-The output of <code>ApplySpamClassifer</code> should be organized as
+The output of <code>ApplySpamClassifier</code> should be organized as
 follows:</p>
 
 <pre>
@@ -2274,7 +2274,7 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 <p>And make predictions:</p>
 
 <pre>
-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifier \
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
  --output cs489-2016w-lintool-a6-test-group_y --model cs489-2016w-lintool-a6-model-group_y
 </pre>
@@ -2296,7 +2296,7 @@ spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.ass
 <p>And make predictions:</p>
 
 <pre>
-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifier \
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
  --output cs489-2016w-lintool-a6-test-britney --model cs489-2016w-lintool-a6-model-britney
 </pre>
@@ -2342,11 +2342,11 @@ ensemble techniques:</p>
 
 </ul>
 
-<p>Write a program <code>ApplyEnsembleSpamClassifer</code> that we
+<p>Write a program <code>ApplyEnsembleSpamClassifier</code> that we
 will execute in the following manner:</p>
 
 <pre>
-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplyEnsembleSpamClassifer \
+spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplyEnsembleSpamClassifier \
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input spam.test.qrels.txt \
  --output cs489-2016w-lintool-a6-test-fusion-average --model cs489-2016w-lintool-a6-model-fusion --method average
 </pre>
@@ -2365,7 +2365,7 @@ specified ensemble technique, and make predictions. Hint: Spark
 broadcast variables are helpful in this implementation.</p>
 
 <p>The output format of the predictions should be the same as the
-output of the <code>ApplySpamClassifer</code> program. You should be
+output of the <code>ApplySpamClassifier</code> program. You should be
 able to evaluate with <code>spam_eval.sh</code> in the same way. Go
 ahead and predict with the two ensemble techniques and evaluate the
 predictions. Note that ensemble techniques can sometimes improve on
@@ -2445,7 +2445,7 @@ my-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/spam.train.group_x.txt \
  --model cs489-2016w-lintool-a6-model-group_x
 
-my-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+my-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifier \
  target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/spam.test.qrels.txt \
  --output cs489-2016w-lintool-a6-test-group_x --model cs489-2016w-lintool-a6-model-group_x
 
@@ -2499,21 +2499,18 @@ in <code>bigdata2016w/assignment6.md</code>.</li>
 
 <li>Your implementations should go in
 package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment6</code>. At the minimum, you should have
-<code>TrainSpamClassifier</code>, <code>ApplySpamClassifer</code>,
-and <code>ApplyEnsembleSpamClassifer</code>. Feel free to include helper code also.</li>
+<code>TrainSpamClassifier</code>, <code>ApplySpamClassifier</code>,
+and <code>ApplyEnsembleSpamClassifier</code>. Feel free to include helper code also.</li>
 
 </ul>
 
 <p>Make sure your implementation runs on the Altiscale cluster. The
-following check scripts are provided for you:</p>
+following check script is provided for you (check the source for the relevant flags):</p>
 
 <ul>
 
-<li><a href=""><code>check_assignment6_public_linux.py</code></a>
-in the Linux Student CS environment.</li>
+<li><a href="assignments/check_assignment6_public.py"><code>check_assignment6_public.py</code></a></li>
 
-<li><a href=""><code>check_assignment6_public_altiscale.py</code></a>
-on the Altiscale cluster.</li>
 
 </ul>
 
@@ -2536,11 +2533,11 @@ clone of your repo and run the public check scripts.</p>
   <li>A correct implementation of the
   basic <code>TrainSpamClassifier</code> is worth 15 points.</li>
 
-  <li>A correct implementation of <code>ApplySpamClassifer</code> is
+  <li>A correct implementation of <code>ApplySpamClassifier</code> is
   worth 5 points.</li>
 
   <li>A correct implementation
-  of <code>ApplyEnsembleSpamClassifer</code> is worth 6 points.</li>
+  of <code>ApplyEnsembleSpamClassifier</code> is worth 6 points.</li>
 
   <li>A correct implementation of the <code>--shuffle</code> option
   in <code>TrainSpamClassifier</code> is worth 5 points.</li>
