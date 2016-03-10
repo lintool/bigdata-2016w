@@ -1961,7 +1961,7 @@ clone of your repo and run the public check scripts.</p>
 <ul>
 
   <li>Getting your code to compile is worth 10 points (by now, these
-  should be "free" points)</li>
+  should be "free" points).</li>
 
   <li>For Q1-Q3, each query is worth 10 points: 5 points for a correct
   implementation that works in the Linux Student CS environment, 5
@@ -2063,6 +2063,8 @@ the spam classifier (links below):</p>
 
 <li><a href="assignments/spam_eval.sh"><code>spam_eval.sh</code></a></li>
 
+<li><a href="assignments/spam_eval_hdfs.sh"><code>spam_eval_hdfs.sh</code></a></li>
+
 </ul>
 
 <p>Compile the C program:</p>
@@ -2073,8 +2075,15 @@ gcc -O2 -o compute_spam_metrics compute_spam_metrics.c -lm
 
 <p>You might get some warnings but don't worry&mdash;the code should
 compile fine. The actual evaluation script <code>spam_eval.sh</code>
+(and <code>spam_eval_hdfs.sh</code>)
 calls <code>compute_spam_metrics</code>, so make sure they're in the
 same directory.</p>
+
+<p>Note on local vs. Altiscale: for this assignment, your code must
+(eventually) work in Altiscale, but feel free to develop locally or in
+the Linux Student CS environment. The instructions below are written
+for running locally, but in a separate section later we will cover
+details specific to Altiscale.</p>
 
 <h4 style="padding-top: 10px">Basic Spam Classifier</h4>
 
@@ -2238,7 +2247,7 @@ field is the classifier's prediction.</p>
 
 <p><b>Important:</b> It is absolutely critical that your
 classifier <b>does not</b> use the label in the test data when making its
-predictions. The only reason the ground truth label is included in the
+predictions. The only reason the label is included in the
 output is to facilitate evaluation (see below).</p>
 
 <p>Finally, you can evaluate your results:</p>
@@ -2299,6 +2308,13 @@ $ ./spam_eval.sh cs489-2016w-lintool-a6-test-britney
 1-ROCA%: 16.46
 </pre>
 
+<p>There may be some non-determinism in running over
+the <code>britney</code> dataset, so you might get something slightly
+different.</p>
+
+<p>Here's a placeholder for question 1 that you're going to answer
+below (see Altiscale section).</p>
+
 <h4 style="padding-top: 10px">Ensemble Spam Classifier</h4>
 
 <p>Next, let's build an ensemble classifier. Start by gathering all
@@ -2321,7 +2337,8 @@ ensemble techniques:</p>
   document as spam; otherwise, classify the document as ham.</li>
 
   <li>Voting: Each classifier gets a vote on spam/ham. Majority
-  wins.</li>
+  wins. The spamminess score in this case is # spam - # ham (so the
+  possible scores are -3, -1, 1, 3).</li>
 
 </ul>
 
@@ -2344,21 +2361,31 @@ the <code>--method</code> option specifies the ensemble technique,
 either "average" or "vote" per above.</p>
 
 <p>Your prediction program needs to load all three models, apply the
-specified ensemble techniques, and make predictions. The output format
-of the predictions should be the same as the output of
-the <code>ApplySpamClassifer</code> program. You should be able to
-evaluate with <code>spam_eval.sh</code> in the same way.</p>
+specified ensemble technique, and make predictions. Hint: Spark
+broadcast variables are helpful in this implementation.</p>
 
-<p>Hint: Spark broadcast variables are helpful.</p>
+<p>The output format of the predictions should be the same as the
+output of the <code>ApplySpamClassifer</code> program. You should be
+able to evaluate with <code>spam_eval.sh</code> in the same way. Go
+ahead and predict with the two ensemble techniques and evaluate the
+predictions. Note that ensemble techniques can sometimes improve on
+the best classifier; sometimes not.</p>
 
-<p><b>Question 1:</b> What is the 1-ROCA% of the score averaging
-technique in the 3-classifier ensemble?</p>
+<p>Here's a placeholder for questions 2 and 3 that you're going to
+answer below (see Altiscale section).</p>
 
-<p><b>Question 2:</b> What is the 1-ROCA% of the voting technique in
-the 3-classifier ensemble?</p>
+<p>How does the ensemble compare to just concatenating all the
+training data together and training a single classifier? Let's find
+out:</p>
 
-<p>Note that ensemble techniques can sometimes improve on the best
-classifier; sometimes not.</p>
+<pre>
+cat spam.train.group_x.txt spam.train.group_y.txt spam.train.britney.txt > spam.train.all.txt
+</pre>
+
+<p>Now train on this larger test set, predict, and evaluate.</p>
+
+<p>Here's a placeholder for question 4 that you're going to answer
+below (see Altiscale section).</p>
 
 <h4 style="padding-top: 10px">The Effects of Data Shuffling</h4>
 
@@ -2393,13 +2420,142 @@ effects.</p>
 
 <p>You should be able to evaluate the newly trained model in exactly
 the same way as above. If you are getting a wildly different 1-ROCA%
-metric each time, you're doing something wrong.</p>
+scores each time, you're doing something wrong.</p>
 
-<p><b>Question 3:</b> Run the trainer 10 times and evaluate the
-classifier on the test data each time. Report the 1-ROCA% metric in
-each of the ten trials and compute the overall average.</p>
+<p>Here's a placeholder for question 5 that you're going to answer
+below (see Altiscale section).</p>
 
+<h4 style="padding-top: 10px">Running on Altiscale</h4>
 
+<p>You are free to develop locally on your own machine or in the Linux
+Student CS environment (and in fact, the instructions above assume
+so), but you must make sure that your code runs in Altiscale
+also. This is just to verify that your Spark programs will work in a
+distributed environment, and that you are not inadvertently taking
+advantage of some local feature.</p>
+
+<p>All training and test data are located
+in <code>/shared/cs489/data/</code> on HDFS.</p>
+
+<p>For example, training, predicting, and evaluating on
+the <code>group_x</code> dataset in Altiscale:</p>
+
+<pre>
+my-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.TrainSpamClassifier \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/spam.train.group_x.txt \
+ --model cs489-2016w-lintool-a6-model-group_x
+
+my-spark-submit --driver-memory 2g --class ca.uwaterloo.cs.bigdata2016w.lintool.assignment6.ApplySpamClassifer \
+ target/bigdata2016w-0.1.0-SNAPSHOT.jar --input /shared/cs489/data/spam.test.qrels.txt \
+ --output cs489-2016w-lintool-a6-test-group_x --model cs489-2016w-lintool-a6-model-group_x
+
+./spam_eval_hdfs.sh cs489-2016w-lintool-a6-test-group_x
+</pre>
+
+<p>The major differences are:</p>
+
+<ul>
+  <li>Location of the training/test data (on HDFS).</li>
+  <li>All input/output from/to HDFS.</li>
+  <li>Use of the <code>my-spark-submit</code> script for launching Spark programs.</li>
+  <li>Use of <code>spam_eval_hdfs.sh</code> for the evaluation script.</li>
+</ul>
+
+<p>Refer back to the placeholders above and answer the following
+questions, <i>running your code on the Altiscale cluster</i>:</p>
+
+<p><b>Question 1:</b> For each individual classifiers trained
+on <code>group_x</code>, <code>group_y</code>,
+and <code>britney</code>, what are the 1-ROCA% scores? You should be
+able to replicate our results
+on <code>group_x</code>, <code>group_y</code>, but there may be some
+non-determinism for <code>britney</code>, which is why we want you to
+report the figures.</p>
+
+<p><b>Question 2:</b> What is the 1-ROCA% score of the score averaging
+technique in the 3-classifier ensemble?</p>
+
+<p><b>Question 3:</b> What is the 1-ROCA% score of the voting
+technique in the 3-classifier ensemble?</p>
+
+<p><b>Question 4:</b> What is the 1-ROCA% score of a single classifier
+trained on all available training data concatenated together?</p>
+
+<p><b>Question 5:</b> Run the shuffle trainer 10 times on
+the <code>britney</code> dataset, predict and evaluate the classifier
+on the test data each time. Report the 1-ROCA% score in each of the
+ten trials and compute the overall average.</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>Put the answers to all the questions above
+in <code>bigdata2016w/assignment6.md</code>.</li>
+
+<li>Your implementations should go in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment6</code>. At the minimum, you should have
+<code>TrainSpamClassifier</code>, <code>ApplySpamClassifer</code>,
+and <code>ApplyEnsembleSpamClassifer</code>. Feel free to include helper code also.</li>
+
+</ul>
+
+<p>Make sure your implementation runs on the Altiscale cluster. The
+following check scripts are provided for you:</p>
+
+<ul>
+
+<li><a href=""><code>check_assignment6_public_linux.py</code></a>
+in the Linux Student CS environment.</li>
+
+<li><a href=""><code>check_assignment6_public_altiscale.py</code></a>
+on the Altiscale cluster.</li>
+
+</ul>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", we would
+recommend that you verify everything above works by performing a clean
+clone of your repo and run the public check scripts.</p>
+
+<p>That's it!</p>
+
+<h4 style="padding-top: 10px">Grading</h4>
+
+<p>The entire assignment is worth 60 points:</p>
+
+<ul>
+
+  <li>Getting your code to compile is worth 4 points.</li>
+
+  <li>A correct implementation of the
+  basic <code>TrainSpamClassifier</code> is worth 15 points.</li>
+
+  <li>A correct implementation of <code>ApplySpamClassifer</code> is
+  worth 5 points.</li>
+
+  <li>A correct implementation
+  of <code>ApplyEnsembleSpamClassifer</code> is worth 6 points.</li>
+
+  <li>A correct implementation of the <code>--shuffle</code> option
+  in <code>TrainSpamClassifier</code> is worth 5 points.</li>
+
+  <li>The answers to questions 1-5 are worth 3 points each.</li>
+
+  <li>Being able to successfully run all your code on Altiscale is
+  worth 10 points. We will begin by testing all your code on
+  Altiscale. If everything works there, you will get full marks. If we
+  can't get your code to run successfully on Altiscale, we will try
+  running your code in the Linux Student CS environment. Even if
+  everything works perfectly there, you will receive zero marks for
+  this item.</li>
+
+</ul>
 
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
