@@ -78,7 +78,7 @@ def check_a6(pn,memory, env,iterations):
          "target/bigdata2016w-0.1.0-SNAPSHOT.jar", "--input", "{0}/spam.test.qrels.txt".format(data_prefix),
          "--model", "cs489-2016w-{0}-a6-model-fusion".format(pn),
          "--output", "cs489-2016w-{0}-a6-output-fusion-voting".format(pn),
-         "--method","voting"])
+         "--method","vote"])
   call(["bash",eval_cmd,"cs489-2016w-{0}-a6-output-fusion-average".format(pn)])
   call(["bash",eval_cmd,"cs489-2016w-{0}-a6-output-fusion-voting".format(pn)])
   raw_input('Press <ENTER> to continue.')
