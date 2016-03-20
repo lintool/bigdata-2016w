@@ -2565,6 +2565,237 @@ clone of your repo and run the public check scripts.</p>
 <div>
 <h3>Assignment 7: Inverted Indexing (Redux) <small>due 8:30am March 31</small></h3>
 
+<p>In this assignment you'll revisit the inverted indexing and boolean
+retrieval program in <a href="#assignment3">assignment 3</a>. In
+assignment 3, your indexer program wrote postings to HDFS
+in <code>MapFile</code>s and your boolean retrieval program read
+postings from those <code>MapFile</code>s. In this assignment, you'll
+write postings to and read postings from HBase instead. In other
+words, the program logic should not change, except for the backend
+storage that you are using. This assignment is to be completed using
+MapReduce in Java.</p>
+
+<h4 style="padding-top: 10px">HBase Word Count</h4>
+
+<p>Because HBase requires additional daemon processes to be installed
+and configured properly, this assignment must be completed in the
+Altiscale environment. That is, do not use the Linux Student CS
+environment for this assignment.</p>
+
+<p>To start, take a look at <code>HBaseWordCount</code> in Bespin,
+which is in the
+package <code>io.bespin.java.mapreduce.wordcount</code>. Make sure you
+pull the repo to grab the latest version of the code.
+The <code>HBaseWordCount</code> program is like the basic word count
+demo, except that it stores the output in an HBase table. That is, the
+reducer output is directly written to an HBase table: the word serves
+as the row key, "c" is the column family, "count" is the column
+qualifier, and the value is the actual count.</p>
+
+<p>The <code>HBaseWordCountFetch</code> program in the same package
+illustrates how you can fetch these counts out of HBase and shows you
+how to use the basic HBase "get" API.</p>
+
+<p>Study these two programs to make sure you understand how they
+work. The two sample program should give you a good introduction to
+the HBase APIs. A free
+online <a href="https://hbase.apache.org/book.html#mapreduce">HBase
+book</a> is a good source of additional details.</p>
+
+<p>Make sure you can run both
+programs. Running <code>HBaseWordCount</code>:</p>
+
+<pre>
+hadoop jar target/bespin-0.1.0-SNAPSHOT.jar io.bespin.java.mapreduce.wordcount.HBaseWordCount \
+ -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+ -input /shared/cs489/data/Shakespeare.txt -table lintool-wc-shakes -reducers 5
+</pre>
+
+<p>Use the <code>-config</code> option to specify the HBase config
+file: point to a version on the Altiscale workspace that we've
+prepared for you. This config file tells the program how to connect to
+the HBase cluster. Use the <code>-table</code> option to name the
+table you're inserting the word counts into. The other options should
+be straightforward to understand.</p>
+
+<p><B>Note:</b> Since HBase is a shared resource across the cluster,
+please make your tables unique by using your username as part of the
+table name, per above.</p>
+
+<p>You should then be able to fetch the word counts from HBase:</p>
+
+<pre>
+hadoop jar target/bespin-0.1.0-SNAPSHOT.jar io.bespin.java.mapreduce.wordcount.HBaseWordCountFetch \
+ -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+ -table lintool-wc-shakes -term love
+</pre>
+
+<p>If everything works, you'll discover that the term "love" appears
+2053 times in the Shakespeare collection.</p>
+
+<p>Next, you should try the same word count demo on the larger sample
+wiki collection on HDFS
+at <code>/shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt</code>.</p>
+
+<h4 style="padding-top: 10px">HBase Storage</h4>
+
+<p>Now it's time to write some code! Following past procedures,
+everything should go into the package namespace
+<code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment7</code> (obviously, replace
+<code>lintool</code> with your actual GitHub username. Note we're back
+to coding in Java for this assignment.</p>
+
+<p>Before you begin, you'll need to pull in the HBase-related
+artifacts; otherwise, your code will not compile. Add the following
+lines in the dependencies block of your <code>pom.xml</code></p>
+
+<pre>
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.hbase&lt;/groupId&gt;
+      &lt;artifactId&gt;hbase-client&lt;/artifactId&gt;
+      &lt;version&gt;0.98.16-hadoop2&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.hbase&lt;/groupId&gt;
+      &lt;artifactId&gt;hbase-server&lt;/artifactId&gt;
+      &lt;version&gt;0.98.16-hadoop2&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre>
+
+<p>You will write two programs, <code>BuildInvertedIndexHBase</code>
+and <code>BooleanRetrievalHBase</code>. These are the counterparts of
+the programs you wrote in assignment 3 (and the original Bespin
+demos); feel free to use your code there as a starting point. Note
+that you don't need to worry about index compression for this
+assignment!</p>
+
+<p>The <code>BuildInvertedIndexHBase</code> program is the HBase
+version of <code>BuildInvertedIndex</code> from the Bespin
+demo. Instead of writing the index to HDFS, you will write the index
+to an HBase table. Use the following table structure: the term will be
+the row key. Your table will have a single column family called
+"p". In the column family, each document id will be a column
+qualifier. The value will be the term frequency.</p>
+
+<p>The <code>BooleanRetrievalHBase</code> program is the HBase version
+of <code>BooleanRetrieval</code> from the Bespin demo. This program
+should read postings from HBase. Note that the only thing you need to
+change is the method <code>fetchDocumentSet</code>: instead of reading
+from the <code>MapFile</code>, you'll read from HBase.</p>
+
+<p>We advise that you begin with the Shakespeare dataset. You should
+be able to build the HBase index with the following command:</p>
+
+<pre>
+hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+  ca.uwaterloo.cs.bigdata2016w.lintool.assignment7.BuildInvertedIndexHBase \
+  -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+  -input /shared/cs489/data/Shakespeare.txt \
+  -table cs489-2016w-lintool-a7-index-shakespeare -reducers 4
+</pre>
+
+<p>And run a query as follows:</p>
+
+<pre>
+hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+  ca.uwaterloo.cs.bigdata2016w.lintool.assignment7.BooleanRetrievalHBase \
+  -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+  -table cs489-2016w-lintool-a7-index-shakespeare\
+  -collection /shared/cs489/data/Shakespeare.txt \
+  -query "outrageous fortune AND"
+</pre>
+
+<p>After you've verified that everything works on the smaller
+Shakespeare collection, move on to the sample Wikipedia
+collection. Index as follows:</p>
+
+<pre>
+hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+  ca.uwaterloo.cs.bigdata2016w.lintool.assignment7.BuildInvertedIndexHBase \
+  -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+  -input /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
+  -table cs489-2016w-lintool-a7-index-wiki -reducers 5
+</pre>
+
+<p>And run a query as follows:</p>
+
+<pre>
+hadoop jar target/bigdata2016w-0.1.0-SNAPSHOT.jar \
+  ca.uwaterloo.cs.bigdata2016w.lintool.assignment7.BooleanRetrievalHBase \
+  -config /home/hbase-0.98.16-hadoop2/conf/hbase-site.xml \
+  -collection /shared/cs489/data/enwiki-20151201-pages-articles-0.1sample.txt \
+  -table cs489-2016w-lintool-a7-index-wiki \
+  -query "waterloo stanford OR cheriton AND"
+</pre>
+
+<p>You should verify that all the sample queries (from assignment 3)
+on both collections work.</p>
+
+<h4 style="padding-top: 10px">Turning in the Assignment</h4>
+
+<p>Please follow these instructions carefully!</p>
+
+<p>Make sure your repo has the following items:</p>
+
+<ul>
+
+<li>If you have any notes you wish to convey to us, put it
+in <code>bigdata2016w/assignment7.md</code>. Otherwise, please create
+an empty file&mdash;following previous assignments, this is where the
+grade with go.</li>
+
+<li>Your implementations should go in
+package <code>ca.uwaterloo.cs.bigdata2016w.lintool.assignment7</code>. At the minimum, you should have
+<code>BuildInvertedIndexHBase</code>
+and <code>BooleanRetrievalHBase</code>. Feel free to include helper
+code also.</li>
+
+</ul>
+
+<p>The following check script is provided for you:</p>
+
+<ul>
+
+<li><a href="#"><code>check_assignment7_public.py</code></a></li>
+
+
+</ul>
+
+<p>When you've done everything, commit to your repo and remember to
+push back to origin. You should be able to see your edits in the web
+interface. Before you consider the assignment "complete", we would
+recommend that you verify everything above works by performing a clean
+clone of your repo and run the public check scripts.</p>
+
+<p>That's it!</p>
+
+<h4 style="padding-top: 10px">Grading</h4>
+
+<p>The entire assignment is worth 30 points:</p>
+
+<ul>
+
+  <li>The implementation to <code>BuildInvertedIndexHBase</code> is
+  worth 10 points; the implementation
+  to <code>BooleanRetrievalHBase</code> is worth 5 points.</li>
+
+  <li>Getting your code to run on sample queries (the same as the ones
+  in assignment 3) is worth 10 points. That is, to earn all 10 points,
+  we should be able to run your code on both the Shakespeare and
+  sample Wikipedia collection, following exactly the procedure
+  above. Therefore, if all the answers are correct and the
+  implementation seems correct, but we cannot get your code to build
+  and run, you will not earn these points.</li>
+
+  <li>Another 5 points is allotted to us verifying the behavior and
+  output of your program in ways that we will not tell you. We're
+  giving you the "public" versions of the check scripts; we'll run a
+  "private" version to examine your output further (i.e., think blind
+  test cases).</li>
+
+</ul>
+
+
 <p style="padding-top: 20px"><a href="#">Back to top</a></p>
 </div>
 </section>
