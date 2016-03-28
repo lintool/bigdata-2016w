@@ -40,7 +40,7 @@ def check_a3(username,reducers):
           "-config", "/home/hbase-0.98.16-hadoop2/conf/hbase-site.xml",
           "-table", "cs489-2016w-{0}-a7-index-shakespeare".format(username), 
           "-collection","/shared/cs489/data/Shakespeare.txt",
-          "-query", "white read OR rose AND pluck AND"])
+          "-query", "white red OR rose AND pluck AND"])
     print("Wiki")
     call(["hadoop","jar","target/bigdata2016w-0.1.0-SNAPSHOT.jar",
           "ca.uwaterloo.cs.bigdata2016w.{0}.assignment7.BuildInvertedIndexHBase".format(username),
